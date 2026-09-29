@@ -2,28 +2,38 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E862142C-3D19-4698-886C-3FC6D3AAE58A}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HUD_Update</RootNamespace>
+    <RootNamespace>UIReforge</RootNamespace>
     <AssemblyName>HUD-Update</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <LangVersion>latest</LangVersion>
+    <!-- Compile against the game's own mscorlib (Unity's .NET profile), like build-plugin.ps1 does. -->
+    <NoStdLib>true</NoStdLib>
+    <NoCompilerStandardLib>true</NoCompilerStandardLib>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
+    <!-- Override on the command line or in a Directory.Build.props: /p:ValheimDir="D:\Games\Valheim" -->
+    <ValheimDir Condition=" '$(ValheimDir)' == '' ">C:\Program Files (x86)\Steam\steamapps\common\Valheim</ValheimDir>
+    <ManagedDir>$(ValheimDir)\valheim_Data\Managed</ManagedDir>
+    <BepInExCoreDir>$(ValheimDir)\BepInEx\core</BepInExCoreDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\Program Files %28x86%29\Steam\steamapps\common\Valheim\BepInEx\plugins\</OutputPath>
+    <!-- Debug builds go straight into the game for quick testing. -->
+    <OutputPath>$(ValheimDir)\BepInEx\plugins\HUD-Update\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -31,54 +41,63 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\UIReforge\UIReforge\Libs\0Harmony.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="assembly_valheim">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\assembly_valheim.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="BepInEx">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\BepInEx.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\Unity.TextMeshPro.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.UI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
+    <Reference Include="0Harmony"><HintPath>$(BepInExCoreDir)\0Harmony.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="BepInEx"><HintPath>$(BepInExCoreDir)\BepInEx.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="assembly_valheim"><HintPath>$(ManagedDir)\assembly_valheim.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Assembly-CSharp"><HintPath>$(ManagedDir)\Assembly-CSharp.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Unity.TextMeshPro"><HintPath>$(ManagedDir)\Unity.TextMeshPro.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="UnityEngine"><HintPath>$(ManagedDir)\UnityEngine.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(ManagedDir)\UnityEngine.CoreModule.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.AssetBundleModule"><HintPath>$(ManagedDir)\UnityEngine.AssetBundleModule.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.ImageConversionModule"><HintPath>$(ManagedDir)\UnityEngine.ImageConversionModule.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.TextRenderingModule"><HintPath>$(ManagedDir)\UnityEngine.TextRenderingModule.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.UI"><HintPath>$(ManagedDir)\UnityEngine.UI.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.UIModule"><HintPath>$(ManagedDir)\UnityEngine.UIModule.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="netstandard"><HintPath>$(ManagedDir)\netstandard.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="mscorlib"><HintPath>$(ManagedDir)\mscorlib.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="System"><HintPath>$(ManagedDir)\System.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="System.Core"><HintPath>$(ManagedDir)\System.Core.dll</HintPath><Private>False</Private></Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HudUpdatePlugin.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TmpFontFixPatch.cs" />
+  </ItemGroup>
+  <!-- Resource names must match what the plugin looks up at runtime:
+       UIReforge.Icons.<file>.png and UIReforge.Bundles.hudPrefab.
+       Listed explicitly so every MSBuild flavour names them the same way;
+       add a line here when adding a new icon (build-plugin.ps1 picks up Icons\*.png on its own). -->
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\Eikthyr.png"><LogicalName>UIReforge.Icons.Eikthyr.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\HealthIcon.png"><LogicalName>UIReforge.Icons.HealthIcon.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\OnionSoup.png"><LogicalName>UIReforge.Icons.OnionSoup.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\Sausages.png"><LogicalName>UIReforge.Icons.Sausages.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\StaminaIcon.png"><LogicalName>UIReforge.Icons.StaminaIcon.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\chevron_outline.png"><LogicalName>UIReforge.Icons.chevron_outline.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\chevron_shape.png"><LogicalName>UIReforge.Icons.chevron_shape.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_aspic.png"><LogicalName>UIReforge.Icons.food_aspic.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_berries.png"><LogicalName>UIReforge.Icons.food_berries.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_bread.png"><LogicalName>UIReforge.Icons.food_bread.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_carrot.png"><LogicalName>UIReforge.Icons.food_carrot.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_drink.png"><LogicalName>UIReforge.Icons.food_drink.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_drumstick.png"><LogicalName>UIReforge.Icons.food_drumstick.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_egg.png"><LogicalName>UIReforge.Icons.food_egg.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_fern.png"><LogicalName>UIReforge.Icons.food_fern.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_fish.png"><LogicalName>UIReforge.Icons.food_fish.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_honey.png"><LogicalName>UIReforge.Icons.food_honey.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_icecream.png"><LogicalName>UIReforge.Icons.food_icecream.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_jam.png"><LogicalName>UIReforge.Icons.food_jam.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_jerky.png"><LogicalName>UIReforge.Icons.food_jerky.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_mushroom.png"><LogicalName>UIReforge.Icons.food_mushroom.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_omelette.png"><LogicalName>UIReforge.Icons.food_omelette.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_onion.png"><LogicalName>UIReforge.Icons.food_onion.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_pie.png"><LogicalName>UIReforge.Icons.food_pie.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_raspberry.png"><LogicalName>UIReforge.Icons.food_raspberry.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_salad.png"><LogicalName>UIReforge.Icons.food_salad.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_skewer.png"><LogicalName>UIReforge.Icons.food_skewer.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_steak.png"><LogicalName>UIReforge.Icons.food_steak.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_stew.png"><LogicalName>UIReforge.Icons.food_stew.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_turnip.png"><LogicalName>UIReforge.Icons.food_turnip.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Bundles\hudPrefab"><LogicalName>UIReforge.Bundles.hudPrefab</LogicalName></EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
