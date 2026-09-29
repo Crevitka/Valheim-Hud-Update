@@ -15,8 +15,8 @@ using UnityEngine.UI;
 [assembly: AssemblyCompany("Crevitka")]
 [assembly: AssemblyProduct("HUD Update")]
 [assembly: AssemblyCopyright("Copyright (c) 2026 Crevitka, MIT License")]
-[assembly: AssemblyVersion("0.1.0.0")]
-[assembly: AssemblyFileVersion("0.1.0.0")]
+[assembly: AssemblyVersion("0.1.1.0")]
+[assembly: AssemblyFileVersion("0.1.1.0")]
 
 namespace UIReforge
 {
@@ -34,7 +34,7 @@ namespace UIReforge
         TintAndGlow
     }
 
-    [BepInPlugin("crevitka.hudupdate", "HUD Update", "0.1.0")]
+    [BepInPlugin("crevitka.hudupdate", "HUD Update", "0.1.1")]
     public class HudUpdatePlugin : BaseUnityPlugin
     {
         private Harmony _harmony;
@@ -298,7 +298,7 @@ namespace UIReforge
                 if (ActiveStyle == HudStyle.Bars) HideVanillaStamina(hud);
 
                 Initialized = true;
-                UnityEngine.Debug.Log("[UIReforge] Custom HUD initialized 0.1.0, style " + ActiveStyle);
+                UnityEngine.Debug.Log("[UIReforge] Custom HUD initialized 0.1.1, style " + ActiveStyle);
             }
             catch (Exception ex)
             {
@@ -1265,24 +1265,32 @@ namespace UIReforge
             }
         }
 
+        // Embedded guardian emblems (white knotwork, Icons/<name>.png). Other powers keep the game icon.
+        private static readonly Dictionary<string, string> GuardianEmblems = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            { "GP_Eikthyr", "Eikthyr" },
+            { "GP_TheElder", "TheElder" },
+            { "GP_Bonemass", "Bonemass" },
+        };
+
         internal static Sprite ResolveGuardianIcon(string guardianName, Sprite vanillaSprite)
         {
             try
             {
-                bool eikthyr = Player.m_localPlayer != null && Player.m_localPlayer.GetGuardianPowerName() == "GP_Eikthyr";
-                if (eikthyr && FoodIconOverrides.TryGetValue("Eikthyr", out var forcedEikthyr))
-                    return forcedEikthyr;
+                // Guardian power prefab (GP_*) -> embedded emblem. Works in every game language.
+                string power = Player.m_localPlayer != null ? Player.m_localPlayer.GetGuardianPowerName() : null;
+                if (!string.IsNullOrEmpty(power) && GuardianEmblems.TryGetValue(power, out var emblemKey) &&
+                    FoodIconOverrides.TryGetValue(emblemKey, out var emblem))
+                    return emblem;
 
                 if (!string.IsNullOrWhiteSpace(guardianName))
                 {
-                    string normalized = guardianName.ToLowerInvariant();
-                    normalized = normalized.Replace("$", "");
-                    normalized = normalized.Replace("guardian_", "");
-
-                    if (normalized.Contains("eikthyr") &&
-                        FoodIconOverrides.TryGetValue("Eikthyr", out var overrideSprite))
+                    string normalized = guardianName.ToLowerInvariant().Replace("$", "").Replace("guardian_", "");
+                    foreach (var pair in GuardianEmblems)
                     {
-                        return overrideSprite;
+                        if (normalized.Contains(pair.Value.ToLowerInvariant().Replace("the", "")) &&
+                            FoodIconOverrides.TryGetValue(pair.Value, out var byName))
+                            return byName;
                     }
 
                     if (FoodIconOverrides.TryGetValue(guardianName, out var directByName))

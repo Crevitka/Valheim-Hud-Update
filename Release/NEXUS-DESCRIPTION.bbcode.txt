@@ -1,11 +1,11 @@
 [size=5][b]HUD Update[/b][/size]
 A Nordic-styled replacement for the lower-left Valheim HUD: guardian power, food and health in one compact block of diamonds. Client-side, no server install required.
 
-[b]0.1.0 — early release.[/b] Everything below works in the author's game, but the mod has not been tested with every setup yet. Bug reports and screenshots are welcome.
+[b]0.1.1 — early release.[/b] Everything below works in the author's game, but the mod has not been tested with every setup yet. Bug reports and screenshots are welcome.
 
 [size=4][b]Features[/b][/size]
 [list]
-[*][b]Guardian power diamond[/b] with a white rune emblem for Eikthyr, the power name and cooldown.
+[*][b]Guardian power diamond[/b] with white knotwork emblems for Eikthyr, The Elder and Bonemass, the power name and cooldown.
 [*][b]Three food diamonds[/b] with flat, white food icons (23 drawn icon types covering vanilla foods up to the Ashlands) and a readable timer. An empty slot shows a dimmed plate.
 [*][b]Vanilla-style reminder:[/b] a food icon pulses once you can eat it again, exactly like the base game.
 [*][b]Two HUD styles[/b], switchable in the config while the game runs:
@@ -39,7 +39,7 @@ A food counts as health, stamina or eitr food when that stat is at least 30 % hi
 [size=4][b]Known limitations[/b][/size]
 [list]
 [*]The HUD uses the game's own font, so it may look slightly different from the artwork.
-[*]Only Eikthyr has a custom emblem so far; other guardian powers use the game's icon.
+[*]Moder, Yagluth, the Queen and Fader do not have custom emblems yet and use the game's icon.
 [/list]
 
 Author: [b]Crevitka[/b]. MIT License. Developed with AI assistance. No game assets are included.

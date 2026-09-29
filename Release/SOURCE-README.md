@@ -1,6 +1,6 @@
 # HUD Update — source
 
-Author: Crevitka. MIT License. Version 0.1.0.
+Author: Crevitka. MIT License. Version 0.1.1.
 
 ## Build
 
@@ -16,7 +16,7 @@ The script references `valheim_Data/Managed` and `BepInEx/core` from the selecte
 
 - `HudUpdatePlugin.cs` — BepInEx entry point, config, Harmony prefixes on `Hud.UpdateHealth`, `Hud.UpdateStamina` and `Hud.UpdateFood`, and both HUD layouts.
 - `TmpFontFixPatch.cs` — assigns the game's TextMeshPro font to the prefab texts.
-- `Icons/*.png` — embedded as `UIReforge.Icons.<name>`: food glyphs (`food_*`), Eikthyr emblem, ✚ / ⚡, chevron frame.
+- `Icons/*.png` — embedded as `UIReforge.Icons.<name>`: food glyphs (`food_*`), guardian emblems (Eikthyr, TheElder, Bonemass), ✚ / ⚡, chevron frame.
 - `Bundles/hudPrefab` — Unity asset bundle with the panel prefab, embedded as `UIReforge.Bundles.hudPrefab` (a loose `prefabs/hudPrefab` next to the DLL is still accepted as a fallback).
 - `IconSource/` — Python generators for the food icons and the chevron (`generate_food_icons.py`, `chevron.py`); the chevron outline comes from the Figma layer in `figma_subtract_path.txt`.
 

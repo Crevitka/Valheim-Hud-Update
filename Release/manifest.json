@@ -1,6 +1,6 @@
 {
   "name": "HUD_Update",
-  "version_number": "0.1.0",
+  "version_number": "0.1.1",
   "website_url": "",
   "description": "Nordic HUD: guardian power diamond, food diamonds with timers and flat icons, slanted health/stamina bars or a red health chevron. Two switchable styles, optional stat-coloured food icons. Client-side.",
   "dependencies": ["denikson-BepInExPack_Valheim-5.4.2202"]

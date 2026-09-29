@@ -97,6 +97,8 @@
     <EmbeddedResource Include="Icons\food_steak.png"><LogicalName>UIReforge.Icons.food_steak.png</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="Icons\food_stew.png"><LogicalName>UIReforge.Icons.food_stew.png</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="Icons\food_turnip.png"><LogicalName>UIReforge.Icons.food_turnip.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\Bonemass.png"><LogicalName>UIReforge.Icons.Bonemass.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\TheElder.png"><LogicalName>UIReforge.Icons.TheElder.png</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="Bundles\hudPrefab"><LogicalName>UIReforge.Bundles.hudPrefab</LogicalName></EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.1.0 — first public release
+## 0.1.1
+
+- Guardian emblems for The Elder and Bonemass (matched by guardian power, works in every game language).
+
+## 0.1.0 — first GitHub release
 
 - Nordic HUD block: guardian power diamond with Eikthyr emblem, name and cooldown; three food diamonds with timers.
 - 23 flat white food icons with name-based matching for vanilla and modded foods.
