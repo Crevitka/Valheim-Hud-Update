@@ -3,6 +3,7 @@
 ## 0.1.1
 
 - Guardian emblems for The Elder and Bonemass (matched by guardian power, works in every game language).
+- Before/after screenshots in the README.
 
 ## 0.1.0 — first GitHub release
 

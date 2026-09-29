@@ -4,6 +4,16 @@ A Nordic-styled replacement for the lower-left Valheim HUD: guardian power, food
 
 > **0.1.1 — early release.** Everything below works in the author's game, but the mod has not been tested with every setup yet. Bug reports and screenshots are welcome.
 
+## Screenshots
+
+![Vanilla HUD next to HUD Update with HudStyle = Bars](https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/before-after-bars.png)
+
+![Vanilla HUD next to HUD Update with HudStyle = Chevron](https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/before-after-chevron.png)
+
+Optional food colouring by dominant stat (`FoodIconColor = Tint`):
+
+![Food icons with FoodIconColor Off and Tint](https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/food-icon-color.png)
+
 ## Features
 
 - **Guardian power diamond** with white knotwork emblems for Eikthyr, The Elder and Bonemass, the power name and cooldown.

@@ -4,6 +4,16 @@
 
 > **0.1.1 — ранняя версия.** Всё описанное работает в игре автора, но на разных сборках мод ещё не проверялся. Сообщения об ошибках и скриншоты приветствуются.
 
+## Скриншоты
+
+![Ванильный HUD и HUD Update в режиме HudStyle = Bars](https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/before-after-bars.png)
+
+![Ванильный HUD и HUD Update в режиме HudStyle = Chevron](https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/before-after-chevron.png)
+
+Необязательная подсветка еды по характеристике (`FoodIconColor = Tint`):
+
+![Иконки еды с FoodIconColor Off и Tint](https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/food-icon-color.png)
+
 ## Возможности
 
 - **Ромб силы стража** с белыми эмблемами-узорами для Эйктюра, Древнего и Костомасса, названием силы и временем перезарядки.
