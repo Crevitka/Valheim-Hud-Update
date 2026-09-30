@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- Replaceable icons: every icon ships as a PNG in `BepInEx/plugins/HUD-Update/Icons`; edit or replace a file and the HUD reloads it in game. Personal replacements go to `BepInEx/config/HUD-Update/Icons` and survive updates. The DLL keeps built-in copies as a fallback.
+- `GP_<Power>.png` adds an emblem for any guardian power (Moder, Yagluth, the Queen, Fader).
+- Guardian emblem credit: 𝗛คηɗץ.
+
 ## 0.1.1
 
 - Guardian emblems for The Elder and Bonemass (matched by guardian power, works in every game language).

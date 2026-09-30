@@ -15,8 +15,8 @@ using UnityEngine.UI;
 [assembly: AssemblyCompany("Crevitka")]
 [assembly: AssemblyProduct("HUD Update")]
 [assembly: AssemblyCopyright("Copyright (c) 2026 Crevitka, MIT License")]
-[assembly: AssemblyVersion("0.1.1.0")]
-[assembly: AssemblyFileVersion("0.1.1.0")]
+[assembly: AssemblyVersion("0.1.2.0")]
+[assembly: AssemblyFileVersion("0.1.2.0")]
 
 namespace UIReforge
 {
@@ -34,7 +34,7 @@ namespace UIReforge
         TintAndGlow
     }
 
-    [BepInPlugin("crevitka.hudupdate", "HUD Update", "0.1.1")]
+    [BepInPlugin("crevitka.hudupdate", "HUD Update", "0.1.2")]
     public class HudUpdatePlugin : BaseUnityPlugin
     {
         private Harmony _harmony;
@@ -43,6 +43,7 @@ namespace UIReforge
         internal static ConfigEntry<float> FoodGlowStrength;
         private DateTime _configStamp;
         private float _nextConfigCheck;
+        private string _iconStamp;
 
         private void Awake()
         {
@@ -60,6 +61,7 @@ namespace UIReforge
                 FoodGlowStrength = Config.Bind("Food", "FoodGlowStrength", .7f,
                     new ConfigDescription("Glow opacity, 0 - invisible, 1 - strongest.", new AcceptableValueRange<float>(0f, 1f)));
                 _configStamp = SafeStamp();
+                try { Directory.CreateDirectory(HudState.IconFolders[0]); } catch { }
 
                 _harmony = new Harmony("crevitka.hudupdate");
                 _harmony.PatchAll();
@@ -83,6 +85,13 @@ namespace UIReforge
         {
             if (Time.unscaledTime < _nextConfigCheck) return;
             _nextConfigCheck = Time.unscaledTime + 1f;
+            string icons = HudState.IconFolderStamp();
+            if (_iconStamp == null) _iconStamp = icons;
+            else if (icons != _iconStamp)
+            {
+                _iconStamp = icons;
+                HudState.ReloadIcons();
+            }
             var stamp = SafeStamp();
             if (stamp == _configStamp) return;
             _configStamp = stamp;
@@ -298,7 +307,7 @@ namespace UIReforge
                 if (ActiveStyle == HudStyle.Bars) HideVanillaStamina(hud);
 
                 Initialized = true;
-                UnityEngine.Debug.Log("[UIReforge] Custom HUD initialized 0.1.1, style " + ActiveStyle);
+                UnityEngine.Debug.Log("[UIReforge] Custom HUD initialized 0.1.2, style " + ActiveStyle);
             }
             catch (Exception ex)
             {
@@ -377,49 +386,137 @@ namespace UIReforge
             }
         }
 
+        // Icons are looked up by file name (without .png), highest priority first:
+        //   1. BepInEx/config/HUD-Update/Icons  - personal replacements, survive mod updates;
+        //   2. Icons/ next to HUD-Update.dll    - the shipped copies, free to edit;
+        //   3. the copies embedded in the DLL   - used when a file is missing or broken.
+        // A file with a new name adds an icon: a food prefab name (CookedMeat.png),
+        // a guardian power (GP_Moder.png) or a boss name.
+        internal static readonly string[] IconFolders =
+        {
+            Path.Combine(Path.Combine(Paths.ConfigPath, "HUD-Update"), "Icons"),
+            Path.Combine(Path.GetDirectoryName(typeof(HudUpdatePlugin).Assembly.Location) ?? Paths.PluginPath, "Icons"),
+        };
+
+        // UI pieces that are not food and need no glow outline.
+        private static readonly HashSet<string> NonFoodIcons = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        { "HealthIcon", "StaminaIcon", "chevron_shape", "chevron_outline", "Eikthyr", "TheElder", "Bonemass" };
+
+        private static readonly List<UnityEngine.Object> LoadedIconObjects = new List<UnityEngine.Object>();
+
         private static void LoadEmbeddedFoodIcons()
         {
-            // Keep decoded textures across world changes, just like the asset bundles.
+            // Keep decoded textures across world changes; ReloadIcons() clears them.
             if (!embeddedIconsLoaded)
             {
                 embeddedIconsLoaded = true;
+                var sources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase); // key -> file path or null
                 const string prefix = "UIReforge.Icons.";
                 var assembly = typeof(HudUpdatePlugin).Assembly;
                 foreach (string resource in assembly.GetManifestResourceNames()
                     .Where(n => n.StartsWith(prefix, StringComparison.Ordinal) && n.EndsWith(".png", StringComparison.OrdinalIgnoreCase)))
+                    sources[resource.Substring(prefix.Length, resource.Length - prefix.Length - 4)] = null;
+                for (int i = IconFolders.Length - 1; i >= 0; i--)
                 {
-                    Texture2D texture = null;
                     try
                     {
-                        using (var input = assembly.GetManifestResourceStream(resource))
-                        using (var bytes = new MemoryStream())
-                        {
-                            input.CopyTo(bytes);
-                            texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                            if (!ImageConversion.LoadImage(texture, bytes.ToArray(), false))
-                                throw new InvalidDataException("Invalid PNG: " + resource);
-                        }
-                        string key = resource.Substring(prefix.Length, resource.Length - prefix.Length - 4);
-                        texture.name = key;
-                        texture.wrapMode = TextureWrapMode.Clamp;
-                        var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
-                        sprite.name = key;
-                        if (key.StartsWith("food_", StringComparison.Ordinal) || key == "OnionSoup" || key == "Sausages")
-                            GlowSprites[sprite] = BuildGlowSprite(texture, key);
-                        texture.Apply(false, true);   // glow is built, free the CPU copy
-                        UnityEngine.Object.DontDestroyOnLoad(texture);
-                        UnityEngine.Object.DontDestroyOnLoad(sprite);
-                        EmbeddedFoodIcons[key] = sprite;
+                        if (!Directory.Exists(IconFolders[i])) continue;
+                        foreach (string file in Directory.GetFiles(IconFolders[i], "*.png"))
+                            sources[Path.GetFileNameWithoutExtension(file)] = file;
                     }
-                    catch (Exception ex)
-                    {
-                        if (texture != null) UnityEngine.Object.Destroy(texture);
-                        UnityEngine.Debug.LogWarning("[UIReforge] Could not load icon " + resource + ": " + ex.Message);
-                    }
+                    catch (Exception ex) { UnityEngine.Debug.LogWarning("[UIReforge] Could not read " + IconFolders[i] + ": " + ex.Message); }
                 }
+
+                int fromDisk = 0;
+                foreach (var source in sources)
+                {
+                    string key = source.Key;
+                    Sprite sprite = null;
+                    if (source.Value != null)
+                    {
+                        try { sprite = CreateIconSprite(key, File.ReadAllBytes(source.Value)); fromDisk++; }
+                        catch (Exception ex) { UnityEngine.Debug.LogWarning("[UIReforge] Icon " + source.Value + " skipped: " + ex.Message); }
+                    }
+                    if (sprite == null)
+                    {
+                        using (var input = assembly.GetManifestResourceStream(prefix + key + ".png"))
+                        {
+                            if (input == null) continue;
+                            using (var bytes = new MemoryStream())
+                            {
+                                input.CopyTo(bytes);
+                                try { sprite = CreateIconSprite(key, bytes.ToArray()); }
+                                catch (Exception ex) { UnityEngine.Debug.LogWarning("[UIReforge] Could not load embedded icon " + key + ": " + ex.Message); }
+                            }
+                        }
+                    }
+                    if (sprite != null) EmbeddedFoodIcons[key] = sprite;
+                }
+                UnityEngine.Debug.Log("[UIReforge] Icons: " + EmbeddedFoodIcons.Count + " (" + fromDisk + " from Icons folders)");
             }
             foreach (var icon in EmbeddedFoodIcons) FoodIconOverrides[icon.Key] = icon.Value;
-            UnityEngine.Debug.Log("[UIReforge] Embedded food icons: " + EmbeddedFoodIcons.Count);
+        }
+
+        private static Sprite CreateIconSprite(string key, byte[] png)
+        {
+            var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            try
+            {
+                if (!ImageConversion.LoadImage(texture, png, false))
+                    throw new InvalidDataException("not a valid PNG");
+                texture.name = key;
+                texture.wrapMode = TextureWrapMode.Clamp;
+                var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
+                sprite.name = key;
+                if (!NonFoodIcons.Contains(key) && !key.StartsWith("GP_", StringComparison.OrdinalIgnoreCase))
+                {
+                    var glow = BuildGlowSprite(texture, key);
+                    GlowSprites[sprite] = glow;
+                    LoadedIconObjects.Add(glow);
+                    LoadedIconObjects.Add(glow.texture);
+                }
+                texture.Apply(false, true);   // glow is built, free the CPU copy
+                UnityEngine.Object.DontDestroyOnLoad(texture);
+                UnityEngine.Object.DontDestroyOnLoad(sprite);
+                LoadedIconObjects.Add(sprite);
+                LoadedIconObjects.Add(texture);
+                return sprite;
+            }
+            catch
+            {
+                UnityEngine.Object.Destroy(texture);
+                throw;
+            }
+        }
+
+        // Called when a PNG in one of the Icons folders changes while the game runs.
+        internal static void ReloadIcons()
+        {
+            RequestRebuild();
+            foreach (var obj in LoadedIconObjects)
+                if (obj != null) UnityEngine.Object.Destroy(obj);
+            LoadedIconObjects.Clear();
+            GlowSprites.Clear();
+            EmbeddedFoodIcons.Clear();
+            FoodIconOverrides.Clear();
+            embeddedIconsLoaded = false;
+            UnityEngine.Debug.Log("[UIReforge] Icons folder changed, reloading icons");
+        }
+
+        internal static string IconFolderStamp()
+        {
+            var stamp = new System.Text.StringBuilder();
+            foreach (string folder in IconFolders)
+            {
+                try
+                {
+                    if (!Directory.Exists(folder)) continue;
+                    foreach (string file in Directory.GetFiles(folder, "*.png"))
+                        stamp.Append(file).Append(File.GetLastWriteTimeUtc(file).Ticks).Append(';');
+                }
+                catch { }
+            }
+            return stamp.ToString();
         }
 
         internal static void FindReferences(GameObject root)
@@ -1282,6 +1379,9 @@ namespace UIReforge
                 if (!string.IsNullOrEmpty(power) && GuardianEmblems.TryGetValue(power, out var emblemKey) &&
                     FoodIconOverrides.TryGetValue(emblemKey, out var emblem))
                     return emblem;
+                // A player's own emblem named after the power, e.g. Icons/GP_Moder.png.
+                if (!string.IsNullOrEmpty(power) && FoodIconOverrides.TryGetValue(power, out var byPower))
+                    return byPower;
 
                 if (!string.IsNullOrWhiteSpace(guardianName))
                 {

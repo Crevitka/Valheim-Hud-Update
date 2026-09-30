@@ -1,7 +1,7 @@
 [size=5][b]HUD Update[/b][/size]
 A Nordic-styled replacement for the lower-left Valheim HUD: guardian power, food and health in one compact block of diamonds. Client-side, no server install required.
 
-[b]0.1.1 — early release.[/b] Everything below works in the author's game, but the mod has not been tested with every setup yet. Bug reports and screenshots are welcome.
+[b]0.1.2 — early release.[/b] Everything below works in the author's game, but the mod has not been tested with every setup yet. Bug reports and screenshots are welcome.
 
 [size=4][b]Screenshots[/b][/size]
 Top row: vanilla HUD, HudStyle = Bars, HudStyle = Chevron. Bottom row: FoodIconColor = Off, Tint, Glow.
@@ -17,12 +17,22 @@ Top row: vanilla HUD, HudStyle = Bars, HudStyle = Chevron. Bottom row: FoodIconC
 [*][b]Bars[/b] (default) — slanted health and stamina bars with value plates and ✚ / ⚡ icons.
 [*][b]Chevron[/b] — a 2×2 food grid framed by a red health chevron with an "N HP" label; stamina stays vanilla.
 [/list]
+[*][b]Replaceable icons:[/b] every icon is a PNG in the Icons folder, swap any of them for your own.
 [*][b]Optional stat colouring[/b] of food icons: red for health, yellow for stamina, blue for eitr, white for balanced food. Tint, soft glow, or both. Off by default.
 [*]A damage trail shows how much health you just lost.
 [/list]
 
 [size=4][b]Installation[/b][/size]
-Install [url=https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/]BepInExPack Valheim[/url], then extract the archive into the Valheim folder so that the DLL ends up in [i]BepInEx/plugins/HUD-Update/HUD-Update.dll[/i]. The mod is a single DLL: the HUD panel and all icons are embedded.
+Install [url=https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/]BepInExPack Valheim[/url], then extract the archive into the Valheim folder so that the mod ends up in [i]BepInEx/plugins/HUD-Update/[/i] (HUD-Update.dll and the Icons folder).
+
+[size=4][b]Custom icons[/b][/size]
+Every icon is a PNG in [i]BepInEx/plugins/HUD-Update/Icons[/i]. Replace a file with your own picture under the same name and the HUD updates within a second, even in game. Delete a file to get the built-in icon back. A mod update restores that folder, so keep your own icons in [i]BepInEx/config/HUD-Update/Icons[/i]: it is created on the first launch and wins over the plugin folder.
+[list]
+[*][b]food_*.png[/b] — glyphs shared by many dishes; [b]<FoodPrefab>.png[/b] (e.g. CookedMeat.png) — one exact food.
+[*][b]Eikthyr / TheElder / Bonemass.png[/b] — guardian emblems; [b]GP_<Power>.png[/b] (GP_Moder, GP_Yagluth, GP_Queen, GP_Fader) adds one for any other guardian.
+[*][b]HealthIcon, StaminaIcon, chevron_shape, chevron_outline[/b] — bar signs and the health chevron.
+[/list]
+Square PNGs with a transparent background work best. Icons/README.txt lists the same rules.
 
 [size=4][b]Configuration[/b][/size]
 [i]BepInEx/config/crevitka.hudupdate.cfg[/i] is created on the first launch. Save it while the game runs and the HUD updates within about a second.
@@ -43,7 +53,7 @@ A food counts as health, stamina or eitr food when that stat is at least 30 % hi
 [size=4][b]Known limitations[/b][/size]
 [list]
 [*]The HUD uses the game's own font, so it may look slightly different from the artwork.
-[*]Moder, Yagluth, the Queen and Fader do not have custom emblems yet and use the game's icon.
+[*]Moder, Yagluth, the Queen and Fader do not have custom emblems yet and use the game's icon (you can add your own, see Custom icons).
 [/list]
 
 Author: [b]Crevitka[/b]. Guardian emblems (Eikthyr, The Elder, Bonemass): [b]𝗛คηɗץ[/b].

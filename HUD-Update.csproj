@@ -102,4 +102,11 @@
     <EmbeddedResource Include="Bundles\hudPrefab"><LogicalName>UIReforge.Bundles.hudPrefab</LogicalName></EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- The icons are also shipped as loose PNGs next to the DLL, where players can replace them. -->
+  <Target Name="AfterBuild">
+    <ItemGroup>
+      <ShippedIcon Include="Icons\*.png" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ShippedIcon)" DestinationFolder="$(OutputPath)Icons" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

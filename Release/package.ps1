@@ -64,10 +64,16 @@ foreach ($key in $common.Keys) { $thunderstore[$key] = $common[$key] }
 $thunderstore['manifest.json'] = $manifestPath
 $thunderstore['icon.png'] = Join-Path $PSScriptRoot 'icon.png'
 $thunderstore['plugins/HUD-Update/HUD-Update.dll'] = $dll
+$icons = Get-ChildItem -LiteralPath (Join-Path $modDir 'Icons') -Filter '*.png' | Sort-Object Name
+if ($icons.Count -lt 30) { throw 'Icons folder looks incomplete' }
+foreach ($icon in $icons) { $thunderstore["plugins/HUD-Update/Icons/$($icon.Name)"] = $icon.FullName }
+$thunderstore['plugins/HUD-Update/Icons/README.txt'] = Join-Path $PSScriptRoot 'Icons-README.txt'
 New-VerifiedArchive "HUD_Update-$version-Thunderstore.zip" $thunderstore
 $nexus = [ordered]@{}
 foreach ($key in $common.Keys) { $nexus[$key] = $common[$key] }
 $nexus['BepInEx/plugins/HUD-Update/HUD-Update.dll'] = $dll
+foreach ($icon in $icons) { $nexus["BepInEx/plugins/HUD-Update/Icons/$($icon.Name)"] = $icon.FullName }
+$nexus['BepInEx/plugins/HUD-Update/Icons/README.txt'] = Join-Path $PSScriptRoot 'Icons-README.txt'
 New-VerifiedArchive "HUD-Update-$version-Nexus.zip" $nexus
 $source = [ordered]@{
     'HudUpdatePlugin.cs' = (Join-Path $modDir 'HudUpdatePlugin.cs')
