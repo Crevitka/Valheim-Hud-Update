@@ -15,8 +15,8 @@ using UnityEngine.UI;
 [assembly: AssemblyCompany("Crevitka")]
 [assembly: AssemblyProduct("HUD Update")]
 [assembly: AssemblyCopyright("Copyright (c) 2026 Crevitka, MIT License")]
-[assembly: AssemblyVersion("0.1.2.0")]
-[assembly: AssemblyFileVersion("0.1.2.0")]
+[assembly: AssemblyVersion("0.1.3.0")]
+[assembly: AssemblyFileVersion("0.1.3.0")]
 
 namespace UIReforge
 {
@@ -34,7 +34,7 @@ namespace UIReforge
         TintAndGlow
     }
 
-    [BepInPlugin("crevitka.hudupdate", "HUD Update", "0.1.2")]
+    [BepInPlugin("crevitka.hudupdate", "HUD Update", "0.1.3")]
     public class HudUpdatePlugin : BaseUnityPlugin
     {
         private Harmony _harmony;
@@ -307,7 +307,7 @@ namespace UIReforge
                 if (ActiveStyle == HudStyle.Bars) HideVanillaStamina(hud);
 
                 Initialized = true;
-                UnityEngine.Debug.Log("[UIReforge] Custom HUD initialized 0.1.2, style " + ActiveStyle);
+                UnityEngine.Debug.Log("[UIReforge] Custom HUD initialized 0.1.3, style " + ActiveStyle);
             }
             catch (Exception ex)
             {
@@ -1645,12 +1645,25 @@ namespace UIReforge
             { "Salad", "salad" }, { "MarinatedGreens", "salad" },
             { "Eyescream", "icecream" }, { "Fiddleheadfern", "fern" },
             { "SeekerAspic", "aspic" }, { "BloodPudding", "aspic" },
+            { "FeastMeadows", "feast" }, { "FeastBlackforest", "feast" }, { "FeastSwamps", "feast" },
+            { "FeastMountains", "feast" }, { "FeastOceans", "feast" }, { "FeastPlains", "feast" },
+            { "FeastMistlands", "feast" }, { "FeastAshlands", "feast" }, { "FeastDeepNorth", "feast" },
+            { "Poteitr", "potato" }, { "BakedPoteitr", "potato" }, { "MeatballsMashedPoteitr", "potato" },
+            { "Pancakes", "pancake" }, { "OvenPancake", "pancake" }, { "VikingCupcake", "cupcake" },
+            { "Kale", "kale" }, { "KaleChips", "kale" }, { "Oat", "grain" }, { "GlowWorm", "worm" },
+            { "OatMilk", "drink" }, { "Lingondricka", "drink" }, { "OatmealLingonberryJam", "stew" },
+            { "MooseKebab", "skewer" }, { "PulledBear", "steak" }, { "CookedSealBlubber", "steak" },
+            { "CookedMooseMeat", "steak" }, { "CookedBjornMeat", "steak" }, { "SmokedMooseMeat", "steak" },
+            { "SmokedFish", "fish" }, { "FishSoup", "stew" }, { "SealSoup", "stew" },
         };
 
         // Fallback for foods missing from the table (mods, renamed prefabs):
         // dish words are checked before ingredient words, so "carrotsoup" is a stew.
         private static readonly string[][] FoodGlyphKeywords =
         {
+            // "feast" first: "FeastMeadows" also contains "mead".
+            new[] { "feast", "feast" }, new[] { "pancake", "pancake" }, new[] { "cupcake", "cupcake" },
+            new[] { "kebab", "skewer" }, new[] { "milk", "drink" },
             new[] { "soup", "stew" }, new[] { "broth", "stew" }, new[] { "porridge", "stew" }, new[] { "sauce", "stew" },
             new[] { "medley", "stew" }, new[] { "pie", "pie" }, new[] { "supreme", "pie" }, new[] { "jam", "jam" },
             new[] { "marmalade", "jam" }, new[] { "smoothie", "drink" }, new[] { "shake", "drink" }, new[] { "mead", "drink" },
@@ -1661,6 +1674,7 @@ namespace UIReforge
             new[] { "berr", "berries" }, new[] { "shroom", "mushroom" }, new[] { "carrot", "carrot" }, new[] { "turnip", "turnip" },
             new[] { "onion", "onion" }, new[] { "honey", "honey" }, new[] { "jelly", "honey" }, new[] { "fern", "fern" },
             new[] { "cream", "icecream" },
+            new[] { "poteitr", "potato" }, new[] { "potato", "potato" }, new[] { "kale", "kale" }, new[] { "worm", "worm" },
         };
 
         private static Sprite FoodGlyph(string glyph)

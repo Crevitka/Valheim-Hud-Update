@@ -1,20 +1,20 @@
 [size=5][b]HUD Update[/b][/size]
 A Nordic-styled replacement for the lower-left Valheim HUD: guardian power, food and health in one compact block of diamonds. Client-side, no server install required.
 
-[b]0.1.2 — early release.[/b] Everything below works in the author's game, but the mod has not been tested with every setup yet. Bug reports and screenshots are welcome.
+[b]0.1.3 — early release.[/b] Everything below works in the author's game, but the mod has not been tested with every setup yet. Bug reports and screenshots are welcome.
 
 [size=4][b]Screenshots[/b][/size]
 Top row: vanilla HUD, HudStyle = Bars, HudStyle = Chevron. Bottom row: FoodIconColor = Off, Tint, Glow.
 [img]https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/hud-comparison.png[/img]
 [spoiler]
-All food icons next to the vanilla ones they replace. Foods in the last row keep their game icon for now.
+All food icons next to the vanilla ones they replace.
 [img]https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/icon-comparison.png[/img]
 [/spoiler]
 
 [size=4][b]Features[/b][/size]
 [list]
 [*][b]Guardian power diamond[/b] with white knotwork emblems for Eikthyr, The Elder and Bonemass, the power name and cooldown.
-[*][b]Three food diamonds[/b] with flat, white food icons (23 drawn icon types covering vanilla foods up to the Ashlands) and a readable timer. An empty slot shows a dimmed plate.
+[*][b]Three food diamonds[/b] with flat, white food icons (30 drawn icon types covering every vanilla food, the Deep North included) and a readable timer. An empty slot shows a dimmed plate.
 [*][b]Vanilla-style reminder:[/b] a food icon pulses once you can eat it again, exactly like the base game.
 [*][b]Two HUD styles[/b], switchable in the config while the game runs:
 [list]

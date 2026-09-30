@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3
+
+- Seven new food icons: feast, potato, pancake, cupcake, kale, oat and glow worm. Every vanilla food now gets a HUD Update icon, the Deep North included.
+- Fixed: the Meadows feast showed the drink icon (its name contains "mead"). All nine feasts use the new feast icon.
+- Deep North dishes mapped to fitting icons: oat milk and lingondricka (drink), moose kebab (skewer), pulled bear, seal blubber, moose and bjorn meat (steak), fish and seal soup, oatmeal with lingonberry jam (stew).
+
 ## 0.1.2
 
 - Replaceable icons: every icon ships as a PNG in `BepInEx/plugins/HUD-Update/Icons`; edit or replace a file and the HUD reloads it in game. Personal replacements go to `BepInEx/config/HUD-Update/Icons` and survive updates. The DLL keeps built-in copies as a fallback.

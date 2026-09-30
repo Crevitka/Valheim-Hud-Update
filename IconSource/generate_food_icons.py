@@ -247,6 +247,86 @@ def omelette():
     cut += '<circle cx="44" cy="52" r="6" fill="none" stroke-width="3"/><circle cx="78" cy="46" r="5" stroke="none"/><circle cx="92" cy="62" r="4" stroke="none"/><circle cx="58" cy="64" r="3.5" stroke="none"/>'
     return svg(keep, cut)
 
+@reg('feast')
+def feast():
+    # Roast bird on a serving platter, both legs pointing up-right.
+    keep = '<ellipse cx="60" cy="104" rx="56" ry="14" stroke="none"/>'
+    keep += '<path d="M14 92 C10 66 32 46 60 46 C84 46 100 60 100 80 C100 90 94 96 84 96 L26 96 C18 96 15 95 14 92 Z" stroke="none"/>'
+    for (x1, y1, x2, y2) in ((78, 62, 102, 34), (90, 76, 116, 52)):
+        keep += f'<path d="M{x1} {y1} L{x2} {y2}" fill="none" stroke-width="16"/>'
+        keep += f'<path d="M{x2} {y2} L{x2+8} {y2-9}" fill="none" stroke-width="5"/>'
+        keep += f'<circle cx="{x2+7}" cy="{y2-14}" r="5.5" stroke="none"/><circle cx="{x2+13}" cy="{y2-8}" r="5.5" stroke="none"/>'
+    cut = '<path d="M6 100 C28 94 92 94 114 100" fill="none" stroke-width="3.6"/>'
+    cut += '<path d="M28 70 C36 60 48 56 60 56" fill="none" stroke-width="3.4"/>'
+    cut += '<path d="M74 72 L94 50 M84 88 L106 66" fill="none" stroke-width="3.2"/>'
+    cut += '<circle cx="16" cy="110" r="3" stroke="none"/><circle cx="104" cy="110" r="3" stroke="none"/>'
+    return svg(keep, cut)
+
+@reg('potato')
+def potato():
+    keep = '<path d="M12 70 C8 50 26 34 48 30 C64 27 72 34 88 32 C106 30 120 44 118 64 C116 84 100 96 78 98 C60 100 48 104 32 98 C20 94 14 84 12 70 Z" stroke="none"/>'
+    cut = ''.join(f'<path d="M{x} {y} C{x+3} {y-2} {x+6} {y-1} {x+7} {y+2}" fill="none" stroke-width="3.4"/>'
+                  for x, y in ((34, 52), (70, 44), (96, 62), (50, 80), (82, 84)))
+    cut += '<path d="M22 62 C26 50 36 42 48 38" fill="none" stroke-width="3"/>'
+    return svg(keep, cut)
+
+@reg('pancake')
+def pancake():
+    # Stack of three pancakes with a knob of butter and a drip.
+    keep = ''.join(f'<rect x="{x}" y="{y}" width="{w}" height="18" rx="9" stroke="none"/>'
+                   for x, y, w in ((14, 92, 100), (18, 72, 92), (22, 52, 84)))
+    keep += '<path d="M50 38 L78 38 L80 52 L48 52 Z" stroke="none"/>'
+    keep += '<path d="M96 60 C100 66 100 74 98 80 C96 84 92 84 92 80 C92 74 94 68 96 60 Z" stroke="none"/>'
+    cut = '<path d="M16 91 L112 91 M20 71 L108 71" fill="none" stroke-width="3.6"/>'
+    cut += '<path d="M24 52 L104 52" fill="none" stroke-width="3.2"/>'
+    cut += '<path d="M34 82 C44 86 56 86 66 84 M40 102 C54 106 70 106 84 102" fill="none" stroke-width="3"/>'
+    return svg(keep, cut)
+
+@reg('cupcake')
+def cupcake():
+    keep = '<path d="M28 66 L100 66 L90 118 L38 118 Z" stroke="none"/>'
+    keep += '<path d="M20 66 C16 50 30 40 42 42 C44 26 62 18 76 26 C90 22 106 34 104 48 C112 52 112 64 108 66 Z" stroke="none"/>'
+    keep += '<circle cx="66" cy="18" r="9" stroke="none"/><path d="M68 10 C70 4 76 2 80 2" fill="none" stroke-width="3.4"/>'
+    cut = '<path d="M22 68 L106 68" fill="none" stroke-width="3.8"/>'
+    cut += ''.join(f'<path d="M{x1} 74 L{x2} 114" fill="none" stroke-width="3.2"/>' for x1, x2 in ((44, 48), (58, 60), (72, 70), (86, 82)))
+    cut += '<path d="M32 56 C48 50 64 54 76 46 C86 40 96 44 100 52" fill="none" stroke-width="3.2"/>'
+    return svg(keep, cut)
+
+@reg('kale')
+def kale():
+    # Curly kale leaf with a stem.
+    keep = '<path d="M60 120 C58 104 58 94 60 86" fill="none" stroke-width="9"/>'
+    keep += ('<path d="M60 90 C40 92 22 80 20 64 C12 60 12 48 20 44 C16 34 24 24 34 26 C36 14 50 8 60 14 '
+             'C70 6 86 10 88 22 C100 20 110 30 104 40 C114 44 114 58 104 62 C104 80 84 92 60 90 Z" stroke="none"/>')
+    cut = '<path d="M60 88 C62 66 64 42 62 18" fill="none" stroke-width="3.6"/>'
+    cut += '<path d="M62 70 C50 64 38 58 28 48 M62 54 C52 46 44 40 38 30 M62 70 C74 62 88 56 98 48 M63 52 C72 44 80 38 84 28" fill="none" stroke-width="3"/>'
+    return svg(keep, cut)
+
+@reg('grain')
+def grain():
+    # Oat stalk: stem with kernels on both sides.
+    keep = '<path d="M64 124 C64 90 64 60 66 22" fill="none" stroke-width="6"/>'
+    for y in (32, 52, 72, 92):
+        keep += f'<ellipse cx="0" cy="0" rx="9" ry="17" transform="translate(48 {y}) rotate(-35)" stroke="none"/>'
+        keep += f'<ellipse cx="0" cy="0" rx="9" ry="17" transform="translate(82 {y - 8}) rotate(35)" stroke="none"/>'
+    keep += '<ellipse cx="0" cy="0" rx="8" ry="15" transform="translate(66 14)" stroke="none"/>'
+    cut = ''.join(f'<path d="M{x} {y-8} L{x} {y+8}" transform="rotate({r} {x} {y})" fill="none" stroke-width="2.6"/>'
+                  for y in (32, 52, 72, 92) for x, r, dy in ((48, -35, 0), (82, 35, -8)) for y in [y + dy])
+    return svg(keep, cut)
+
+@reg('worm')
+def worm():
+    # Glow worm: segmented curl with a few sparks.
+    keep = '<path d="M24 104 C24 84 46 80 62 88 C80 98 104 92 104 70 C104 50 84 42 70 52" fill="none" stroke-width="22"/>'
+    keep += '<circle cx="66" cy="52" r="13" stroke="none"/>'
+    star = lambda x, y, r: (f'<path d="M{x} {y-r} L{x+r*.28:.1f} {y-r*.28:.1f} L{x+r} {y} L{x+r*.28:.1f} {y+r*.28:.1f} '
+                            f'L{x} {y+r} L{x-r*.28:.1f} {y+r*.28:.1f} L{x-r} {y} L{x-r*.28:.1f} {y-r*.28:.1f} Z" stroke="none"/>')
+    keep += star(30, 34, 12) + star(52, 18, 7) + star(106, 20, 9)
+    cut = ''.join(f'<path d="{d}" fill="none" stroke-width="3.2"/>' for d in (
+        'M30 92 L20 110', 'M46 82 L42 102', 'M64 86 L60 104', 'M82 90 L82 110', 'M96 80 L112 92', 'M94 60 L114 62', 'M84 48 L92 40'))
+    cut += '<circle cx="62" cy="48" r="3.4" stroke="none"/>'
+    return svg(keep, cut)
+
 if __name__ == '__main__':
     import io
     import numpy as np

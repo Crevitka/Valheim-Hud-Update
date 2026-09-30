@@ -97,6 +97,13 @@
     <EmbeddedResource Include="Icons\food_steak.png"><LogicalName>UIReforge.Icons.food_steak.png</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="Icons\food_stew.png"><LogicalName>UIReforge.Icons.food_stew.png</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="Icons\food_turnip.png"><LogicalName>UIReforge.Icons.food_turnip.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_cupcake.png"><LogicalName>UIReforge.Icons.food_cupcake.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_feast.png"><LogicalName>UIReforge.Icons.food_feast.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_grain.png"><LogicalName>UIReforge.Icons.food_grain.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_kale.png"><LogicalName>UIReforge.Icons.food_kale.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_pancake.png"><LogicalName>UIReforge.Icons.food_pancake.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_potato.png"><LogicalName>UIReforge.Icons.food_potato.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\food_worm.png"><LogicalName>UIReforge.Icons.food_worm.png</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="Icons\Bonemass.png"><LogicalName>UIReforge.Icons.Bonemass.png</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="Icons\TheElder.png"><LogicalName>UIReforge.Icons.TheElder.png</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="Bundles\hudPrefab"><LogicalName>UIReforge.Bundles.hudPrefab</LogicalName></EmbeddedResource>
