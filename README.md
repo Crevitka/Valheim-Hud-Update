@@ -10,6 +10,15 @@ Top row: vanilla HUD, `HudStyle = Bars`, `HudStyle = Chevron`. Bottom row: `Food
 
 ![Vanilla HUD, Bars and Chevron styles; food icons with FoodIconColor Off, Tint and Glow](docs/hud-comparison.png)
 
+<details>
+<summary>All food icons next to the vanilla ones they replace</summary>
+
+![Each HUD Update icon next to the vanilla foods and guardian powers it replaces](docs/icon-comparison.png)
+
+Foods in the last row keep their game icon for now.
+
+</details>
+
 ## Features
 
 - **Guardian power diamond** with white knotwork emblems for Eikthyr, The Elder and Bonemass, the power name and cooldown.
@@ -92,7 +101,7 @@ msbuild HUD-Update.csproj /p:Configuration=Release /p:ValheimDir="D:\Games\Valhe
 | `TmpFontFixPatch.cs` | Assigns the game's TextMeshPro font to the panel texts |
 | `Icons/` | PNGs shipped next to the DLL and embedded as a fallback (`UIReforge.Icons.<name>`): food glyphs, guardian emblems, ✚ / ⚡, chevron frame |
 | `Bundles/hudPrefab` | Unity asset bundle with the panel prefab (`UIReforge.Bundles.hudPrefab`) |
-| `IconSource/` | Python generators that reproduce the food icons and chevron textures exactly |
+| `IconSource/` | Python generators that reproduce the food icons and chevron textures exactly; `make_screenshot_grid.py` / `make_icon_comparison.py` build the README pictures; `IconDump.cs` is the one-off helper plugin that exports vanilla food icons for the comparison |
 | `Release/` | Thunderstore manifest, icon, READMEs, changelog, Nexus description, packaging script, cover artwork |
 
 ## Credits and licence

@@ -10,6 +10,15 @@
 
 ![Ванильный HUD, стили Bars и Chevron; иконки еды с FoodIconColor Off, Tint и Glow](https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/hud-comparison.png)
 
+<details>
+<summary>Все иконки еды рядом с ванильными, которые они заменяют</summary>
+
+![Каждая иконка HUD Update рядом с ванильной едой и силами стражей, которые она заменяет](https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/icon-comparison.png)
+
+Еда в последнем ряду пока остаётся с игровой иконкой.
+
+</details>
+
 ## Возможности
 
 - **Ромб силы стража** с белыми эмблемами-узорами для Эйктюра, Древнего и Костомасса, названием силы и временем перезарядки.

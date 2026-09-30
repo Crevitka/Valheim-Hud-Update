@@ -10,6 +10,15 @@ Top row: vanilla HUD, `HudStyle = Bars`, `HudStyle = Chevron`. Bottom row: `Food
 
 ![Vanilla HUD, Bars and Chevron styles; food icons with FoodIconColor Off, Tint and Glow](https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/hud-comparison.png)
 
+<details>
+<summary>All food icons next to the vanilla ones they replace</summary>
+
+![Each HUD Update icon next to the vanilla foods and guardian powers it replaces](https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/icon-comparison.png)
+
+Foods in the last row keep their game icon for now.
+
+</details>
+
 ## Features
 
 - **Guardian power diamond** with white knotwork emblems for Eikthyr, The Elder and Bonemass, the power name and cooldown.
