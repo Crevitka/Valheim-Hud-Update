@@ -6,13 +6,9 @@
 
 ## Скриншоты
 
-![Ванильный HUD и HUD Update в режиме HudStyle = Bars](https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/before-after-bars.png)
+Верхний ряд: ванильный HUD, `HudStyle = Bars`, `HudStyle = Chevron`. Нижний ряд: `FoodIconColor = Off`, `Tint`, `Glow`.
 
-![Ванильный HUD и HUD Update в режиме HudStyle = Chevron](https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/before-after-chevron.png)
-
-Необязательная подсветка еды по характеристике (`FoodIconColor = Tint`):
-
-![Иконки еды с FoodIconColor Off и Tint](https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/food-icon-color.png)
+![Ванильный HUD, стили Bars и Chevron; иконки еды с FoodIconColor Off, Tint и Glow](https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/hud-comparison.png)
 
 ## Возможности
 

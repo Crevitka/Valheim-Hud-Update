@@ -4,10 +4,8 @@ A Nordic-styled replacement for the lower-left Valheim HUD: guardian power, food
 [b]0.1.1 — early release.[/b] Everything below works in the author's game, but the mod has not been tested with every setup yet. Bug reports and screenshots are welcome.
 
 [size=4][b]Screenshots[/b][/size]
-[img]https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/before-after-bars.png[/img]
-[img]https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/before-after-chevron.png[/img]
-Optional food colouring by dominant stat (FoodIconColor = Tint):
-[img]https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/food-icon-color.png[/img]
+Top row: vanilla HUD, HudStyle = Bars, HudStyle = Chevron. Bottom row: FoodIconColor = Off, Tint, Glow.
+[img]https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/hud-comparison.png[/img]
 
 [size=4][b]Features[/b][/size]
 [list]

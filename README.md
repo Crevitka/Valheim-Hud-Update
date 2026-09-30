@@ -6,13 +6,9 @@ A Nordic-styled replacement for the lower-left Valheim HUD: guardian power, food
 
 ## Screenshots
 
-![Vanilla HUD next to HUD Update with HudStyle = Bars](docs/before-after-bars.png)
+Top row: vanilla HUD, `HudStyle = Bars`, `HudStyle = Chevron`. Bottom row: `FoodIconColor = Off`, `Tint`, `Glow`.
 
-![Vanilla HUD next to HUD Update with HudStyle = Chevron](docs/before-after-chevron.png)
-
-Optional food colouring by dominant stat (`FoodIconColor = Tint`):
-
-![Food icons with FoodIconColor Off and Tint](docs/food-icon-color.png)
+![Vanilla HUD, Bars and Chevron styles; food icons with FoodIconColor Off, Tint and Glow](docs/hud-comparison.png)
 
 ## Features
 
