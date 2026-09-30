@@ -54,4 +54,6 @@ A food counts as "health", "stamina" or "eitr" when that stat is at least 30 % h
 
 ## Credits and licence
 
-Author: **Crevitka**. MIT License — see `LICENSE`. Developed with AI assistance. No game assets are included.
+Author: **Crevitka**. Guardian emblems (Eikthyr, The Elder, Bonemass): **𝗛คηɗץ**.
+
+MIT License — see `LICENSE`. Developed with AI assistance. No game assets are included.

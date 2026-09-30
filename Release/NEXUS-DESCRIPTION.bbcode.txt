@@ -46,4 +46,5 @@ A food counts as health, stamina or eitr food when that stat is at least 30 % hi
 [*]Moder, Yagluth, the Queen and Fader do not have custom emblems yet and use the game's icon.
 [/list]
 
-Author: [b]Crevitka[/b]. MIT License. Developed with AI assistance. No game assets are included.
+Author: [b]Crevitka[/b]. Guardian emblems (Eikthyr, The Elder, Bonemass): [b]𝗛คηɗץ[/b].
+MIT License. Developed with AI assistance. No game assets are included.

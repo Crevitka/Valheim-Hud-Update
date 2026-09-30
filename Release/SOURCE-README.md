@@ -1,6 +1,6 @@
 # HUD Update — source
 
-Author: Crevitka. MIT License. Version 0.1.1.
+Author: Crevitka. Guardian emblems (Eikthyr, The Elder, Bonemass): 𝗛คηɗץ. MIT License. Version 0.1.1.
 
 ## Build
 

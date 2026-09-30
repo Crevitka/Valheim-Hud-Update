@@ -85,4 +85,6 @@ msbuild HUD-Update.csproj /p:Configuration=Release /p:ValheimDir="D:\Games\Valhe
 
 ## Credits and licence
 
-Author: **Crevitka**. MIT License — see `LICENSE`. Developed with AI assistance. No game assets are included.
+Author: **Crevitka**. Guardian emblems (Eikthyr, The Elder, Bonemass): **𝗛คηɗץ**.
+
+MIT License — see `LICENSE`. Developed with AI assistance. No game assets are included.
