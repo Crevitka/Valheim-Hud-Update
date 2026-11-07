@@ -26,7 +26,7 @@ foreach ($icon in Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'Icons') -
 # The HUD panel prefab (Unity asset bundle) is embedded too.
 $arguments += "-resource:$(Join-Path $PSScriptRoot 'Bundles\hudPrefab'),UIReforge.Bundles.hudPrefab"
 
-$arguments += (Join-Path $PSScriptRoot 'HudUpdatePlugin.cs'), (Join-Path $PSScriptRoot 'TmpFontFixPatch.cs')
+$arguments += (Join-Path $PSScriptRoot 'HudUpdatePlugin.cs'), (Join-Path $PSScriptRoot 'TmpFontFixPatch.cs'), (Join-Path $PSScriptRoot 'ExtraSlotsSkin.cs')
 & dotnet $compiler @arguments
 if ($LASTEXITCODE -ne 0) { throw 'HUD-Update compilation failed' }
 # Loose copies of the icons go next to the DLL; players replace them there.

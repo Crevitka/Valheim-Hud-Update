@@ -78,6 +78,7 @@ New-VerifiedArchive "HUD-Update-$version-Nexus.zip" $nexus
 $source = [ordered]@{
     'HudUpdatePlugin.cs' = (Join-Path $modDir 'HudUpdatePlugin.cs')
     'TmpFontFixPatch.cs' = (Join-Path $modDir 'TmpFontFixPatch.cs')
+    'ExtraSlotsSkin.cs' = (Join-Path $modDir 'ExtraSlotsSkin.cs')
     'build-plugin.ps1' = (Join-Path $modDir 'build-plugin.ps1')
     'Bundles/hudPrefab' = (Join-Path $modDir 'Bundles/hudPrefab')
     'IconSource/generate_food_icons.py' = (Join-Path $modDir 'IconSource/generate_food_icons.py')

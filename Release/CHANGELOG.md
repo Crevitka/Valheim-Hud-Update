@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.0
+
+- Added UseVanillaFoodIcons to use original food icons in HUD diamonds and ExtraSlots food slots, with live switching (default false).
+
+- Added BarBackgroundOpacity for health/stamina tracks and value plates in Bars and Yggdrasil (default 0.75), applied live.
+
+- Added the Yggdrasil HUD style and support for a fourth food slot.
+- Added outlined guardian emblems for Moder, Yagluth, the Queen and Fader.
+- Added optional ExtraSlots styling and layout integration; ExtraSlots is not required.
+- Enlarged food quick-slot counts to match food timers, with more space from the right edge.
+- Added faint outlines to empty ammo slots and aligned ammo/food rows with the right edge of the bars in Bars mode.
+- Added HUD scale, diamond opacity and percentage/absolute bar scaling settings.
+- Added an optional stamina strip for Chevron (off by default); its visual redesign is still pending.
+- Fixed the source archive to include ExtraSlotsSkin.cs.
+
 ## 0.1.3
 
 - Seven new food icons: feast, potato, pancake, cupcake, kale, oat and glow worm. Every vanilla food now gets a HUD Update icon, the Deep North included.

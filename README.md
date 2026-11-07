@@ -1,109 +1,68 @@
 # HUD Update
 
-A Nordic-styled replacement for the lower-left Valheim HUD: guardian power, food and health in one compact block of diamonds. Client-side, no server install required.
+A client-side Nordic HUD for Valheim by Crevitka. Guardian power, food timers, health and stamina in a compact layout.
 
-> **0.1.3 — early release.** Everything below works in the author's game, but the mod has not been tested with every setup yet. Bug reports and screenshots are welcome.
+## Version 0.2.0
 
-## Screenshots
-
-Top row: vanilla HUD, `HudStyle = Bars`, `HudStyle = Chevron`. Bottom row: `FoodIconColor = Off`, `Tint`, `Glow`.
-
-![Vanilla HUD, Bars and Chevron styles; food icons with FoodIconColor Off, Tint and Glow](docs/hud-comparison.png)
-
-<details>
-<summary>All food icons next to the vanilla ones they replace</summary>
-
-![Each HUD Update icon next to the vanilla foods and guardian powers it replaces](docs/icon-comparison.png)
-
-</details>
+Early release. The final 0.2.0 package still needs in-game verification across all three styles. See CHANGELOG.md for changes.
 
 ## Features
 
-- **Guardian power diamond** with white knotwork emblems for Eikthyr, The Elder and Bonemass, the power name and cooldown.
-- **Three food diamonds** with flat, white food icons (30 drawn icon types covering every vanilla food, the Deep North included) and a readable timer. An empty slot shows a dimmed plate.
-- **Vanilla-style reminder:** a food icon pulses once you can eat it again (less than half of its time left), exactly like the base game.
-- **Two HUD styles**, switchable in the config while the game runs:
-  - `Bars` (default) — slanted health and stamina bars with value plates and ✚ / ⚡ icons.
-  - `Chevron` — a 2×2 food grid framed by a red health chevron with an "N HP" label; stamina stays vanilla.
-- **Replaceable icons:** every icon is a PNG in the `Icons` folder, swap any of them for your own.
-- **Optional stat colouring** of food icons: red for health, yellow for stamina, blue for eitr, white for balanced food. Tint, soft glow, or both. Off by default.
-- A damage trail shows how much health you just lost.
+- **Bars:** slanted health and stamina bars with readable value plates.
+- **Chevron:** food diamonds framed by a red health chevron. An optional stamina strip is available; vanilla stamina is used by default.
+- **Yggdrasil:** a branch frame with vertically arranged food diamonds and resource bars to the right.
+- Seven guardian emblems: Eikthyr, The Elder, Bonemass, Moder, Yagluth, the Queen and Fader.
+- Flat food icons, timers and a reminder pulse when food can be eaten again. Optional stat tint/glow.
+- Support for a fourth meal when provided by a compatible mod such as OneMoreMeal.
+- Optional **ExtraSlots** integration: styled ammo, food and quick slots. Food counts match the timer size; empty ammo slots have faint borders. In Bars, food and ammo rows align with the right edge of the resource bars.
+- Adjustable HUD size, diamond opacity and percentage/absolute resource bar scaling.
 
 ## Installation
 
-**Mod manager (r2modman / Thunderstore Mod Manager):** install *HUD Update*; BepInExPack Valheim is installed automatically.
+Requires BepInExPack Valheim. Install with your mod manager, or extract the Nexus/manual archive into the Valheim folder. The resulting plugin path is `BepInEx/plugins/HUD-Update/HUD-Update.dll`.
 
-**Manual:** install [BepInExPack Valheim](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/), then copy the `HUD-Update` folder (the DLL and the `Icons` folder) into `BepInEx/plugins/`.
-
-## Custom icons
-
-Every icon is a PNG in `BepInEx/plugins/HUD-Update/Icons`. Replace a file with your own picture under the same name and the HUD updates within a second, even in game. Delete a file to get the built-in icon back: the DLL keeps its own copies, so the mod also works without the folder.
-
-A mod update restores that folder. To keep your own icons, put them in `BepInEx/config/HUD-Update/Icons` instead; it is created on the first launch and wins over the plugin folder.
-
-- `food_*.png` — glyphs shared by many dishes (`food_steak`, `food_stew`, `food_pie`…).
-- `<FoodPrefab>.png` — an icon for one exact food, e.g. `CookedMeat.png`.
-- `Eikthyr.png`, `TheElder.png`, `Bonemass.png` — guardian emblems; `GP_<Power>.png` (`GP_Moder.png`, `GP_Yagluth.png`, `GP_Queen.png`, `GP_Fader.png`) adds one for any other guardian.
-- `HealthIcon.png`, `StaminaIcon.png`, `chevron_shape.png`, `chevron_outline.png` — bar signs and the health chevron.
-
-Square PNGs with a transparent background work best. `FoodIconColor = Tint` colours the icon, so it looks right on white or light icons. `Icons/README.txt` lists the same rules.
+When updating, remove any older standalone `BepInEx/plugins/HUD-Update.dll` so only one copy loads. Preserve your personal configuration. ExtraSlots and OneMoreMeal are optional and are not bundled.
 
 ## Configuration
 
-`BepInEx/config/crevitka.hudupdate.cfg` is created on the first launch. Save the file while the game is running and the HUD updates within about a second.
+Edit `BepInEx/config/crevitka.hudupdate.cfg`; changes reload in game.
 
-| Section | Setting | Values | Default |
-|---|---|---|---|
-| General | `HudStyle` | `Bars`, `Chevron` | `Bars` |
-| Food | `FoodIconColor` | `Off`, `Tint`, `Glow`, `TintAndGlow` | `Off` |
-| Food | `FoodGlowStrength` | `0` – `1` | `0.7` |
+| Section | Setting | Default |
+|---|---|---|
+| General | HudStyle: Bars, Chevron, Yggdrasil | Bars |
+| General | HudScale: 0.5–2 | 1 |
+| Bars | BarScale: Percent, Absolute | Percent |
+| Bars | HealthBarMax / StaminaBarMax | 200 / 200 |
+| Bars | DiamondOpacity: 0–1 | 0.93 |
+| Bars | BarBackgroundOpacity: 0–1 | 0.75 |
+| Chevron | StaminaInChevron | false |
+| Yggdrasil | GlowStrength: 0–1 | 0.25 |
+| Compatibility | ExtraSlotsLayout: Auto, Off | Auto |
+| Food | UseVanillaFoodIcons | false |
+| Food | FoodIconColor: Off, Tint, Glow, TintAndGlow | Off |
+| Food | FoodGlowStrength: 0–1 | 0.7 |
 
-A food counts as "health", "stamina" or "eitr" when that stat is at least 30 % higher than the next one; otherwise it is shown as balanced (white). Tint is applied only to the mod's own white icons — vanilla colour icons keep their colours and only get the glow.
+ExtraSlots controls slot availability, progression and shortcuts in its own configuration. HUD Update changes their appearance and placement. Set ExtraSlotsLayout to Off to restore ExtraSlots presentation.
 
-## Compatibility
+## Custom icons
 
-- Client-side only. Works on vanilla and modded servers; other players do not need it.
-- Replaces the vanilla health panel, food icons and guardian power display (and, with `Bars`, the stamina bar). Mods that restyle the same HUD parts — for example **Auga** or other full HUD overhauls — are not compatible.
-- Mods that only add items are fine: unknown foods get a matching icon by name (soup, pie, jam, meat…) or keep their own icon.
+PNG files in `BepInEx/plugins/HUD-Update/Icons` can be replaced and reload in game. Keep personal replacements in `BepInEx/config/HUD-Update/Icons` to preserve them across updates; this folder takes priority. Built-in copies provide a fallback.
 
-## Known limitations
+Guardian filenames: Eikthyr.png, TheElder.png, Bonemass.png, GP_Moder.png, GP_Yagluth.png, GP_Queen.png and GP_Fader.png. See Icons/README.txt for other filenames. Use transparent square PNGs.
 
-- The HUD font is the game's own; it may look slightly different from the artwork.
-- Moder, Yagluth, the Queen and Fader do not have custom emblems yet and use the game's icon (you can add your own, see *Custom icons*).
+## Compatibility and limitations
 
-## Building from source
+- Install on the client; no server installation is required.
+- Other mods that replace the same HUD elements may conflict.
+- A custom **Eitr bar is not implemented** in this release.
+- Chevron stamina styling is still being refined; the generated redesign concepts are not included.
+- Fonts may differ from concept artwork. Test your resolution and UI scale.
 
-Requires Windows, a .NET SDK (or Visual Studio 2022), Valheim and BepInExPack Valheim. Game, Unity and BepInEx assemblies are referenced from your own installation and are not part of this repository.
+## Credits
 
-**PowerShell script** (no Visual Studio needed):
+Author: **Crevitka**. Original Eikthyr, The Elder and Bonemass emblems: **𝗛คηɗץ**. Moder, Yagluth, Queen and Fader emblems generated with AI assistance. Developed with AI assistance. MIT License; see LICENSE.
 
-```powershell
-./build-plugin.ps1 -ValheimDir 'D:\Games\Valheim'
-```
+BarBackgroundOpacity controls the dark backgrounds and value plates of health/stamina bars in Bars and Yggdrasil. Coloured fills and text are unaffected; changes apply in game. It does not affect Chevron.
 
-**Visual Studio / MSBuild:** open `HUD-Update.sln`, or
 
-```powershell
-msbuild HUD-Update.csproj /p:Configuration=Release /p:ValheimDir="D:\Games\Valheim"
-```
-
-`Debug` builds are written straight to `BepInEx/plugins/HUD-Update/` of the selected game folder. Without `ValheimDir` both use the default Steam path under Program Files (x86). Output: `bin/Release/HUD-Update.dll` and `bin/Release/Icons/`.
-
-**Release packages:** `./Release/package.ps1` validates versions and builds the Thunderstore, Nexus and source ZIPs into `Release/dist/`.
-
-### Repository layout
-
-| Path | Contents |
-|---|---|
-| `HudUpdatePlugin.cs` | Plugin entry point, config, Harmony prefixes on `Hud.UpdateHealth` / `UpdateStamina` / `UpdateFood`, both HUD layouts |
-| `TmpFontFixPatch.cs` | Assigns the game's TextMeshPro font to the panel texts |
-| `Icons/` | PNGs shipped next to the DLL and embedded as a fallback (`UIReforge.Icons.<name>`): food glyphs, guardian emblems, ✚ / ⚡, chevron frame |
-| `Bundles/hudPrefab` | Unity asset bundle with the panel prefab (`UIReforge.Bundles.hudPrefab`) |
-| `IconSource/` | Python generators that reproduce the food icons and chevron textures exactly; `make_screenshot_grid.py` / `make_icon_comparison.py` build the README pictures; `IconDump.cs` is the one-off helper plugin that exports vanilla food icons for the comparison |
-| `Release/` | Thunderstore manifest, icon, READMEs, changelog, Nexus description, packaging script, cover artwork |
-
-## Credits and licence
-
-Author: **Crevitka**. Guardian emblems (Eikthyr, The Elder, Bonemass): **𝗛คηɗץ**.
-
-MIT License — see `LICENSE`. Developed with AI assistance. No game assets are included.
+Set [Food] UseVanillaFoodIcons = true to show original food item icons in the food diamonds and ExtraSlots food slots. This also preserves modded food icons. No PNG files need to be deleted. Guardian emblems are unaffected; set false to restore HUD Update icons. Changes apply live.

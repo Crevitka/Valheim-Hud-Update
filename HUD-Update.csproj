@@ -61,51 +61,14 @@
   <ItemGroup>
     <Compile Include="HudUpdatePlugin.cs" />
     <Compile Include="TmpFontFixPatch.cs" />
+    <Compile Include="ExtraSlotsSkin.cs" />
   </ItemGroup>
   <!-- Resource names must match what the plugin looks up at runtime:
        UIReforge.Icons.<file>.png and UIReforge.Bundles.hudPrefab.
-       Listed explicitly so every MSBuild flavour names them the same way;
-       add a line here when adding a new icon (build-plugin.ps1 picks up Icons\*.png on its own). -->
+       Wildcard metadata keeps resource names consistent with build-plugin.ps1;
+       new PNG icons are included automatically. -->
   <ItemGroup>
-    <EmbeddedResource Include="Icons\Eikthyr.png"><LogicalName>UIReforge.Icons.Eikthyr.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\HealthIcon.png"><LogicalName>UIReforge.Icons.HealthIcon.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\OnionSoup.png"><LogicalName>UIReforge.Icons.OnionSoup.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\Sausages.png"><LogicalName>UIReforge.Icons.Sausages.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\StaminaIcon.png"><LogicalName>UIReforge.Icons.StaminaIcon.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\chevron_outline.png"><LogicalName>UIReforge.Icons.chevron_outline.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\chevron_shape.png"><LogicalName>UIReforge.Icons.chevron_shape.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_aspic.png"><LogicalName>UIReforge.Icons.food_aspic.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_berries.png"><LogicalName>UIReforge.Icons.food_berries.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_bread.png"><LogicalName>UIReforge.Icons.food_bread.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_carrot.png"><LogicalName>UIReforge.Icons.food_carrot.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_drink.png"><LogicalName>UIReforge.Icons.food_drink.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_drumstick.png"><LogicalName>UIReforge.Icons.food_drumstick.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_egg.png"><LogicalName>UIReforge.Icons.food_egg.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_fern.png"><LogicalName>UIReforge.Icons.food_fern.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_fish.png"><LogicalName>UIReforge.Icons.food_fish.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_honey.png"><LogicalName>UIReforge.Icons.food_honey.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_icecream.png"><LogicalName>UIReforge.Icons.food_icecream.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_jam.png"><LogicalName>UIReforge.Icons.food_jam.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_jerky.png"><LogicalName>UIReforge.Icons.food_jerky.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_mushroom.png"><LogicalName>UIReforge.Icons.food_mushroom.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_omelette.png"><LogicalName>UIReforge.Icons.food_omelette.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_onion.png"><LogicalName>UIReforge.Icons.food_onion.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_pie.png"><LogicalName>UIReforge.Icons.food_pie.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_raspberry.png"><LogicalName>UIReforge.Icons.food_raspberry.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_salad.png"><LogicalName>UIReforge.Icons.food_salad.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_skewer.png"><LogicalName>UIReforge.Icons.food_skewer.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_steak.png"><LogicalName>UIReforge.Icons.food_steak.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_stew.png"><LogicalName>UIReforge.Icons.food_stew.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_turnip.png"><LogicalName>UIReforge.Icons.food_turnip.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_cupcake.png"><LogicalName>UIReforge.Icons.food_cupcake.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_feast.png"><LogicalName>UIReforge.Icons.food_feast.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_grain.png"><LogicalName>UIReforge.Icons.food_grain.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_kale.png"><LogicalName>UIReforge.Icons.food_kale.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_pancake.png"><LogicalName>UIReforge.Icons.food_pancake.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_potato.png"><LogicalName>UIReforge.Icons.food_potato.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\food_worm.png"><LogicalName>UIReforge.Icons.food_worm.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\Bonemass.png"><LogicalName>UIReforge.Icons.Bonemass.png</LogicalName></EmbeddedResource>
-    <EmbeddedResource Include="Icons\TheElder.png"><LogicalName>UIReforge.Icons.TheElder.png</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Icons\*.png"><LogicalName>UIReforge.Icons.%(Filename)%(Extension)</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="Bundles\hudPrefab"><LogicalName>UIReforge.Bundles.hudPrefab</LogicalName></EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

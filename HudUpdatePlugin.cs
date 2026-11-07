@@ -15,15 +15,28 @@ using UnityEngine.UI;
 [assembly: AssemblyCompany("Crevitka")]
 [assembly: AssemblyProduct("HUD Update")]
 [assembly: AssemblyCopyright("Copyright (c) 2026 Crevitka, MIT License")]
-[assembly: AssemblyVersion("0.1.3.0")]
-[assembly: AssemblyFileVersion("0.1.3.0")]
+[assembly: AssemblyVersion("0.2.0.0")]
+[assembly: AssemblyFileVersion("0.2.0.0")]
 
 namespace UIReforge
 {
     public enum HudStyle
     {
         Bars,
-        Chevron
+        Chevron,
+        Yggdrasil
+    }
+
+    public enum ExtraSlotsLayoutMode
+    {
+        Auto,
+        Off
+    }
+
+    public enum BarScaleMode
+    {
+        Percent,
+        Absolute
     }
 
     public enum FoodIconColorMode
@@ -34,13 +47,23 @@ namespace UIReforge
         TintAndGlow
     }
 
-    [BepInPlugin("crevitka.hudupdate", "HUD Update", "0.1.3")]
+    [BepInPlugin("crevitka.hudupdate", "HUD Update", "0.2.0")]
     public class HudUpdatePlugin : BaseUnityPlugin
     {
         private Harmony _harmony;
         internal static ConfigEntry<HudStyle> Style;
         internal static ConfigEntry<FoodIconColorMode> FoodColor;
+        internal static ConfigEntry<bool> UseVanillaFoodIcons;
         internal static ConfigEntry<float> FoodGlowStrength;
+        internal static ConfigEntry<BarScaleMode> BarScale;
+        internal static ConfigEntry<float> HealthBarMax;
+        internal static ConfigEntry<float> StaminaBarMax;
+        internal static ConfigEntry<float> DiamondOpacity;
+        internal static ConfigEntry<float> BarBackgroundOpacity;
+        internal static ConfigEntry<float> HudScale;
+        internal static ConfigEntry<float> YggGlow;
+        internal static ConfigEntry<bool> ChevronStamina;
+        internal static ConfigEntry<ExtraSlotsLayoutMode> ExtraSlotsLayout;
         private DateTime _configStamp;
         private float _nextConfigCheck;
         private string _iconStamp;
@@ -52,14 +75,55 @@ namespace UIReforge
                 Style = Config.Bind("General", "HudStyle", HudStyle.Bars,
                     "Bars - guardian, food diamonds and straight health/stamina bars.\n" +
                     "Chevron - guardian, 2x2 food grid and a red health chevron; stamina stays vanilla.\n" +
+                    "Yggdrasil - food diamonds stacked in a branch frame above the guardian, bars to the right; " +
+                    "room for a 4th meal (OneMoreMeal) and ExtraSlots panels around the bars.\n" +
                     "Can be changed while the game runs: save this file and the HUD rebuilds.");
                 Style.SettingChanged += (sender, args) => HudState.RequestRebuild();
+                UseVanillaFoodIcons = Config.Bind("Food", "UseVanillaFoodIcons", false,
+                    "Use the original item icons for food, including ExtraSlots food slots, instead of HUD Update replacements. Also preserves icons supplied by other food mods. Guardian emblems are unaffected.");
+                UseVanillaFoodIcons.SettingChanged += (sender, args) => HudState.RequestRebuild();
                 FoodColor = Config.Bind("Food", "FoodIconColor", FoodIconColorMode.Off,
                     "Colour food icons by the stat they raise most: health = red, stamina = yellow, eitr = blue, balanced = white.\n" +
                     "Off - plain icons. Tint - the icon itself is coloured (only the mod's white icons, vanilla icons stay as is).\n" +
                     "Glow - a soft coloured glow around the icon. TintAndGlow - both.");
                 FoodGlowStrength = Config.Bind("Food", "FoodGlowStrength", .7f,
                     new ConfigDescription("Glow opacity, 0 - invisible, 1 - strongest.", new AcceptableValueRange<float>(0f, 1f)));
+                BarScale = Config.Bind("Bars", "BarScale", BarScaleMode.Percent,
+                    "How much of the health / stamina bar is coloured.\n" +
+                    "Percent - current value / your current maximum: a full bar means full health, whatever you have eaten.\n" +
+                    "Absolute - current value / HealthBarMax (StaminaBarMax): the bar grows as you eat, like the vanilla bar gets longer. " +
+                    "A faint band shows what is missing up to your current maximum.");
+                HealthBarMax = Config.Bind("Bars", "HealthBarMax", 200f,
+                    new ConfigDescription("Health that fills the whole bar with BarScale = Absolute (higher values are shown as a full bar).",
+                        new AcceptableValueRange<float>(25f, 1000f)));
+                StaminaBarMax = Config.Bind("Bars", "StaminaBarMax", 200f,
+                    new ConfigDescription("Stamina that fills the whole bar with BarScale = Absolute.",
+                        new AcceptableValueRange<float>(25f, 1000f)));
+                DiamondOpacity = Config.Bind("Bars", "DiamondOpacity", .93f,
+                    new ConfigDescription("Opacity of the dark guardian and food diamonds in the Bars and Yggdrasil styles. 0.72 matches the Chevron food cells; lower is more see-through.",
+                        new AcceptableValueRange<float>(0f, 1f)));
+                DiamondOpacity.SettingChanged += (sender, args) => HudState.RequestRebuild();
+                BarBackgroundOpacity = Config.Bind("Bars", "BarBackgroundOpacity", .75f,
+                    new ConfigDescription("Opacity of the health and stamina backgrounds, including the value plates, in Bars and Yggdrasil. 0 = transparent, 1 = opaque. Does not change coloured fills or text.",
+                        new AcceptableValueRange<float>(0f, 1f)));
+                BarBackgroundOpacity.SettingChanged += (sender, args) => HudState.RequestRebuild();
+                HudScale = Config.Bind("General", "HudScale", 1f,
+                    new ConfigDescription("Size of the whole HUD block, 1 = as designed. Panels of ExtraSlots follow it in the Yggdrasil style.",
+                        new AcceptableValueRange<float>(.5f, 2f)));
+                HudScale.SettingChanged += (sender, args) => HudState.RequestRebuild();
+                ChevronStamina = Config.Bind("Chevron", "StaminaInChevron", false,
+                    "Show stamina as a yellow strip along the inner edge of the health chevron instead of the vanilla stamina bar.");
+                ChevronStamina.SettingChanged += (sender, args) => HudState.RequestRebuild();
+                YggGlow = Config.Bind("Yggdrasil", "GlowStrength", .25f,
+                    new ConfigDescription("Blue glow around the branches, 0 - none, 1 - as in the mockup.",
+                        new AcceptableValueRange<float>(0f, 1f)));
+                YggGlow.SettingChanged += (sender, args) => HudState.ApplyYggGlow();
+                ExtraSlotsLayout = Config.Bind("Compatibility", "ExtraSlotsLayout", ExtraSlotsLayoutMode.Auto,
+                    "ExtraSlots (shudnal) panels.\n" +
+                    "Auto - ammo and food slots next to the health/stamina block, quick slots under the hotbar, " +
+                    "all drawn in the HUD's white outline look (every style).\n" +
+                    "Off - leave them as ExtraSlots places and draws them.");
+                ExtraSlotsLayout.SettingChanged += (sender, args) => ExtraSlotsSkin.RestoreAll();
                 _configStamp = SafeStamp();
                 try { Directory.CreateDirectory(HudState.IconFolders[0]); } catch { }
 
@@ -137,12 +201,16 @@ namespace UIReforge
         private static readonly List<GameObject> HiddenVanillaStamina = new List<GameObject>();
         internal static Image[] ChevronFast;
         internal static Image[] ChevronSlow;
+        internal static Image[] ChevronStaminaFast;
+        internal static Image[] ChevronStaminaSlow;
         private static int guardianUpdateFrame = -1;
         internal static bool Initialized;
         internal static GameObject Panel;
 
         internal static Image HpFastImage;
         internal static Image HpSlowImage;
+        internal static Image HpCapacityImage;
+        internal static Image StaminaCapacityImage;
         internal static TextMeshProUGUI HpText;
         internal static float HpFastValue = -1f;
         internal static float HpSlowValue = -1f;
@@ -153,7 +221,9 @@ namespace UIReforge
         internal static float StaminaFastValue = -1f;
         internal static float StaminaSlowValue = -1f;
 
-        internal static readonly FoodSlotUI[] Slots = new FoodSlotUI[3];
+        internal static FoodSlotUI[] Slots = new FoodSlotUI[3];
+        // Vanilla eats 3 meals; OneMoreMeal (zhaila0) resizes Hud.m_foodIcons to 4 in Hud.Awake.
+        internal const int MaxFoodSlots = 4;
         internal static BuffUI Buff;
 
         internal static Sprite DefaultFoodIcon;
@@ -194,12 +264,16 @@ namespace UIReforge
             HiddenVanillaStamina.Clear();
             ChevronFast = null;
             ChevronSlow = null;
+            ChevronStaminaFast = null;
+            ChevronStaminaSlow = null;
 
             if (Panel != null) UnityEngine.Object.Destroy(Panel);
             Panel = null;
             GuardianName = null;
 
             HpFastImage = null;
+            HpCapacityImage = null;
+            StaminaCapacityImage = null;
             HpSlowImage = null;
             HpText = null;
             HpFastValue = -1f;
@@ -289,6 +363,8 @@ namespace UIReforge
                 // must not fight the normalized layout on subsequent frames.
                 foreach (var component in Panel.GetComponentsInChildren<MonoBehaviour>(true))
                     if (component.GetType().Name == "GuiBar") component.enabled = false;
+                int foodCount = hud.m_foodIcons != null ? Mathf.Clamp(hud.m_foodIcons.Length, 3, MaxFoodSlots) : 3;
+                if (Slots.Length != foodCount) Slots = new FoodSlotUI[foodCount];
                 FindReferences(Panel);
                 if (HpFastImage == null || StaminaFastImage == null || HpText == null || StaminaText == null ||
                     Buff == null || Buff.Icon == null || Buff.Timer == null ||
@@ -296,7 +372,10 @@ namespace UIReforge
                     throw new InvalidDataException("HUD prefab is missing required bars, labels or food slots");
                 ActiveStyle = CurrentStyle;
                 if (ActiveStyle == HudStyle.Chevron) ApplyChevronLayout();
+                else if (ActiveStyle == HudStyle.Yggdrasil) ApplyYggdrasilLayout();
                 else ApplyReferenceLayout();
+                float scale = HudUpdatePlugin.HudScale != null ? HudUpdatePlugin.HudScale.Value : 1f;
+                Panel.transform.localScale = Vector3.one * scale;
 
                 CaptureVanillaGuardian(hud);
                 HideVanillaGuardianVisuals();
@@ -304,10 +383,10 @@ namespace UIReforge
                 if (hud.m_healthPanel != null)
                     hud.m_healthPanel.gameObject.SetActive(false);
 
-                if (ActiveStyle == HudStyle.Bars) HideVanillaStamina(hud);
+                if (ActiveStyle != HudStyle.Chevron || ChevronStaminaOn) HideVanillaStamina(hud);
 
                 Initialized = true;
-                UnityEngine.Debug.Log("[UIReforge] Custom HUD initialized 0.1.3, style " + ActiveStyle);
+                UnityEngine.Debug.Log("[UIReforge] Custom HUD initialized 0.2.0, style " + ActiveStyle + ", food slots " + Slots.Length);
             }
             catch (Exception ex)
             {
@@ -459,7 +538,9 @@ namespace UIReforge
 
         private static Sprite CreateIconSprite(string key, byte[] png)
         {
-            var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            // Yggdrasil art (ygg_*) is drawn at 2x and shrinks on screen: give it mipmaps.
+            bool art = key.StartsWith("ygg_", StringComparison.OrdinalIgnoreCase);
+            var texture = new Texture2D(2, 2, TextureFormat.RGBA32, art);
             try
             {
                 if (!ImageConversion.LoadImage(texture, png, false))
@@ -468,7 +549,7 @@ namespace UIReforge
                 texture.wrapMode = TextureWrapMode.Clamp;
                 var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
                 sprite.name = key;
-                if (!NonFoodIcons.Contains(key) && !key.StartsWith("GP_", StringComparison.OrdinalIgnoreCase))
+                if (!art && !NonFoodIcons.Contains(key) && !key.StartsWith("GP_", StringComparison.OrdinalIgnoreCase))
                 {
                     var glow = BuildGlowSprite(texture, key);
                     GlowSprites[sprite] = glow;
@@ -563,6 +644,13 @@ namespace UIReforge
             }
 
             foodChildren.Sort((a, b) => string.Compare(a.name, b.name, StringComparison.Ordinal));
+            // The prefab has three food diamonds; clone the first untouched one for a 4th meal.
+            for (int extra = foodChildren.Count; foodChildren.Count > 0 && extra < Slots.Length; extra++)
+            {
+                var clone = UnityEngine.Object.Instantiate(foodChildren[0].gameObject, root.transform);
+                clone.name = "food_extra" + extra;
+                foodChildren.Add(clone.transform);
+            }
 
             for (int i = 0; i < Slots.Length; i++)
             {
@@ -633,14 +721,28 @@ namespace UIReforge
         internal static readonly Color HpTrailColor = new Color(.93f, .78f, .72f, 1f);
         internal static readonly Color StaminaColor = new Color(.84f, .65f, .43f, 1f);
         internal static readonly Color StaminaTrailColor = new Color(.97f, .9f, .78f, 1f);
-        private const float BarLeft = 238f, BarWidth = 266f, BarHeight = 27f, PlateWidth = 34f;
         private const float HpBarY = 122f, StaminaBarY = 88f;
+        // Bar geometry of the active style (Bars defaults; Yggdrasil overrides them).
+        private static float BarLeft = 238f, BarWidth = 266f, BarHeight = 27f, PlateWidth = 34f;
+        private static Color BarTrackColor, BarPlateColor;
+
+        private static void UseBarGeometry(float left, float width, float height, float plate, Color track, Color plateColor)
+        {
+            BarLeft = left; BarWidth = width; BarHeight = height; PlateWidth = plate;
+            BarTrackColor = track; BarPlateColor = plateColor;
+            float opacity = HudUpdatePlugin.BarBackgroundOpacity?.Value ?? .75f;
+            BarTrackColor.a = opacity;
+            BarPlateColor.a = opacity;
+        }
+
+        internal static bool ChevronStaminaOn =>
+            HudUpdatePlugin.ChevronStamina != null && HudUpdatePlugin.ChevronStamina.Value;
 
         internal static HudStyle CurrentStyle =>
             HudUpdatePlugin.Style != null ? HudUpdatePlugin.Style.Value : HudStyle.Bars;
 
         private static void BuildGuardian(RectTransform root, Vector2 center, Vector2 iconPos, Vector2 iconSize,
-            float nameY, bool outlinedName)
+            float nameY, bool outlinedName, float diamond = 100f)
         {
             if (Buff == null || Buff.Root == null) return;
             var background = Buff.Root.GetComponent<RectTransform>();
@@ -648,7 +750,7 @@ namespace UIReforge
             content.SetParent(root, false);
             Place(content, center.x, center.y, 142, 142, true);
             background.SetParent(content, false);
-            Place(background, 0, 0, 100, 100, false, 45);
+            Place(background, 0, 0, diamond, diamond, false, 45);
             background.gameObject.SetActive(true);
             TintDiamond(background);
             if (Buff.Icon != null)
@@ -738,10 +840,12 @@ namespace UIReforge
             var darken = Panel.transform.Find("darken");
             if (darken != null) darken.gameObject.SetActive(false);
 
+            UseBarGeometry(238f, 266f, 27f, 34f, new Color(PanelDark.r, PanelDark.g, PanelDark.b, .75f), PanelDark);
             BuildGuardian(root, new Vector2(80, 105), new Vector2(2, 12), new Vector2(98, 90), -52f, false);
 
-            float[] x = { 158, 209, 158 };
-            float[] y = { 153, 105, 57 };
+            // A 4th meal (OneMoreMeal) continues the zig-zag upwards.
+            float[] x = { 158, 209, 158, 209 };
+            float[] y = { 153, 105, 57, 201 };
             for (int i = 0; i < Slots.Length; i++)
             {
                 var slot = Slots[i];
@@ -755,12 +859,131 @@ namespace UIReforge
                 SetupDiamondTimerText(slot.Timer);
             }
 
-            BuildBar("Health", HpBarY, false, HpColor, HpTrailColor, ref HpFastImage, ref HpSlowImage, ref HpText);
-            BuildBar("Stamina", StaminaBarY, true, StaminaColor, StaminaTrailColor, ref StaminaFastImage, ref StaminaSlowImage, ref StaminaText);
+            BuildBar("Health", HpBarY, false, HpColor, HpTrailColor, ref HpFastImage, ref HpSlowImage, ref HpText, out HpCapacityImage);
+            BuildBar("Stamina", StaminaBarY, true, StaminaColor, StaminaTrailColor, ref StaminaFastImage, ref StaminaSlowImage, ref StaminaText, out StaminaCapacityImage);
             LayoutResourceIcon("HealthIcon", HpBarY);
             LayoutResourceIcon("StaminaIcon", StaminaBarY);
             BuildTimerShadows();
             foreach (Graphic graphic in Panel.GetComponentsInChildren<Graphic>(true)) graphic.raycastTarget = false;
+        }
+
+        // ---- Yggdrasil style -----------------------------------------------
+        // Geometry from the Figma mockup (file "Valheim", slides 40/41): the frame is
+        // 1920x1080 and 1 Figma px = 1 canvas unit at 1080p (GuiScaler divides by
+        // 1920x1080), so Figma (x, y) -> panel (x, 1080 - y) with the panel at the
+        // bottom-left screen corner. Branch art: IconSource/yggdrasil_art.py.
+        // Figma: black at 90 %. The blade art has holes under the bars (yggdrasil_art.py),
+        // so the see-through track shows the world, not the white blade.
+        internal static readonly Color YggTrack = new Color(0f, 0f, 0f, .9f);
+        internal static readonly Color YggHp = new Color(.678f, .086f, .086f, 1f);       // #AD1616
+        internal static readonly Color YggStamina = new Color(.835f, .635f, .369f, 1f);  // #D5A25E
+        internal static readonly float[] YggFoodY = { 145.61f, 215.61f, 284.61f, 355.18f };
+        internal const float YggFoodX = 97.86f;
+        // ExtraSlots panels (Figma slide 41): first slot centre and pitch, panel units.
+        internal static readonly Vector2 YggAmmoStart = new Vector2(285.5f, 115.5f);
+        internal static readonly Vector2 YggFoodBarStart = new Vector2(455.5f, 52.5f);
+        internal const float YggSlotSize = 45f, YggAmmoPitch = 52f, YggFoodPitch = 55f;
+
+        internal static void ApplyYggdrasilLayout()
+        {
+            var root = Panel.GetComponent<RectTransform>();
+            Place(root, 0, 0, 600, 440, true);
+            root.pivot = Vector2.zero;
+            var darken = Panel.transform.Find("darken");
+            if (darken != null) darken.gameObject.SetActive(false);
+            bool four = Slots.Length >= 4;
+
+            // White blade between the bars: below everything else.
+            var back = AddArt(root, four ? "ygg_back" : "ygg_back3");
+            if (back != null) back.transform.SetAsFirstSibling();
+            var backGlow = AddArt(root, four ? "ygg_back_glow" : "ygg_back3_glow");
+            if (backGlow != null) backGlow.transform.SetAsFirstSibling();
+
+            for (int i = 0; i < Slots.Length; i++)
+            {
+                var slot = Slots[i];
+                if (slot == null) continue;
+                Place(slot.Root.GetComponent<RectTransform>(), YggFoodX, YggFoodY[i], 45f, 45f, true);
+                var substrate = slot.Root.transform.Find("substrate") as RectTransform;
+                Place(substrate, 0, 0, 45f, 45f, false, 45);
+                TintDiamond(substrate);
+                if (slot.Icon != null) Place(slot.Icon.rectTransform, 0, .3f, 25, 25);
+                PlaceGlow(slot);
+                SetupDiamondTimerText(slot.Timer);
+                if (slot.Timer != null)
+                {
+                    // Figma: Inter Semi Bold 8 px, right of and below the icon.
+                    slot.Timer.rectTransform.anchoredPosition = new Vector2(8.1f, -9.2f);
+                    slot.Timer.fontSize = 10;
+                }
+            }
+
+            // Bars: left end cut parallel to the branch, value plate on the right.
+            UseBarGeometry(146f, 253.7f, 25.5f, 26.8f, YggTrack, YggTrack);
+            BuildBar("Health", 70.25f, false, YggHp, HpTrailColor, ref HpFastImage, ref HpSlowImage, ref HpText, out HpCapacityImage);
+            BuildBar("Stamina", 37.15f, true, YggStamina, StaminaTrailColor, ref StaminaFastImage, ref StaminaSlowImage, ref StaminaText, out StaminaCapacityImage);
+            foreach (var text in new[] { HpText, StaminaText })
+            {
+                if (text == null) continue;
+                text.fontSize = 13;
+                Outline(text, .18f);
+            }
+            // The + and lightning signs are part of the branch art.
+            foreach (string name in new[] { "HealthIcon", "StaminaIcon" })
+            {
+                var t = Panel.transform.Find(name);
+                if (t != null) t.gameObject.SetActive(false);
+            }
+
+            BuildTimerShadows();
+            // Branch frame over the diamonds and the bar ends, under the guardian.
+            var frontGlow = AddArt(root, four ? "ygg_front_glow" : "ygg_front3_glow");
+            if (frontGlow != null) frontGlow.transform.SetAsLastSibling();
+            var front = AddArt(root, four ? "ygg_front" : "ygg_front3");
+            if (front != null) front.transform.SetAsLastSibling();
+            YggGlowImages = new[] { backGlow, frontGlow };
+            ApplyYggGlow();
+
+            BuildGuardian(root, new Vector2(98.07f, 53.4f), new Vector2(-.3f, 13.5f), new Vector2(100, 93), -40.5f, true, 75f);
+            if (GuardianName != null) GuardianName.fontSize = 13;
+            if (Buff != null && Buff.Timer != null)
+            {
+                Buff.Timer.rectTransform.anchoredPosition = new Vector2(0, -27f);
+                Buff.Timer.fontSize = 12;
+            }
+            if (Buff != null && Buff.Root != null) Buff.Root.transform.SetAsLastSibling();
+            foreach (Graphic graphic in Panel.GetComponentsInChildren<Graphic>(true)) graphic.raycastTarget = false;
+        }
+
+        internal static Image[] YggGlowImages;
+
+        internal static void ApplyYggGlow()
+        {
+            if (YggGlowImages == null) return;
+            float a = HudUpdatePlugin.YggGlow != null ? HudUpdatePlugin.YggGlow.Value : .25f;
+            foreach (var image in YggGlowImages)
+            {
+                if (image == null) continue;
+                image.color = new Color(1f, 1f, 1f, a);
+                image.enabled = a > .001f;
+            }
+        }
+
+        // A full-size art layer covering screen x 0..440, y 640..1080 (Figma px).
+        private static Image AddArt(RectTransform root, string key)
+        {
+            if (!FoodIconOverrides.TryGetValue(key, out var sprite) || sprite == null)
+            {
+                UnityEngine.Debug.LogWarning("[UIReforge] Missing art " + key + ".png");
+                return null;
+            }
+            var image = NewRect("UIReforge_" + key, root, typeof(Image)).GetComponent<Image>();
+            Place(image.rectTransform, 220f, 220f, 440f, 440f, true);
+            image.sprite = sprite;
+            image.color = Color.white;
+            image.preserveAspect = false;
+            image.raycastTarget = false;
+            return image;
         }
 
         // ---- Chevron style -------------------------------------------------
@@ -795,7 +1018,8 @@ namespace UIReforge
 
             // No backplate: the gaps between the food diamonds stay see-through.
             // Figma "Group 117": 45 px cells, guardian 75 px -> 100 units.
-            Vector2[] food = { c + new Vector2(-1.28f, 45.62f), c + new Vector2(46.72f, 0.28f), c + new Vector2(-1.28f, -46.38f) };
+            Vector2[] food = { c + new Vector2(-1.28f, 45.62f), c + new Vector2(46.72f, 0.28f), c + new Vector2(-1.28f, -46.38f),
+                c + new Vector2(152f, 0.28f) };   // 4th meal (OneMoreMeal): right of the chevron tip
             for (int i = 0; i < Slots.Length; i++)
             {
                 var slot = Slots[i];
@@ -831,7 +1055,7 @@ namespace UIReforge
                 if (t != null && t.GetComponent<TextMeshProUGUI>() == null) t.gameObject.SetActive(false);
             }
             StaminaFastImage = StaminaSlowImage = null;
-            StaminaText = null;
+            if (!ChevronStaminaOn) StaminaText = null;
             BuildTimerShadows();
             foreach (Graphic graphic in Panel.GetComponentsInChildren<Graphic>(true)) graphic.raycastTarget = false;
         }
@@ -859,6 +1083,7 @@ namespace UIReforge
             ChevronSlow = BuildChevronSegments("slow", maskImage.transform, mid, ChevronTrail);
             ChevronFast = BuildChevronSegments("fast", maskImage.transform, mid, ChevronRed);
             HpFastImage = HpSlowImage = null;
+            if (ChevronStaminaOn) BuildStaminaChevron(root, c, mid);
 
             if (outline != null)
             {
@@ -866,6 +1091,25 @@ namespace UIReforge
                 Stretch(edge.rectTransform);
                 edge.sprite = outline;
                 edge.color = ChevronOutline;
+            }
+
+            if (ChevronStaminaOn && StaminaText != null)
+            {
+                // Under the bottom end of the chevron, in stamina yellow.
+                StaminaText.transform.SetParent(root, false);
+                var rt = StaminaText.rectTransform;
+                rt.anchorMin = rt.anchorMax = Vector2.zero;
+                rt.pivot = new Vector2(0f, .5f);
+                rt.localScale = Vector3.one;
+                rt.localRotation = Quaternion.identity;
+                rt.anchoredPosition = new Vector2(c.x + 40f, c.y - 92f);
+                rt.sizeDelta = new Vector2(90f, 22f);
+                StyleText(StaminaText, true);
+                StaminaText.fontSize = 16;
+                StaminaText.color = StaminaText.faceColor = new Color(1f, .82f, .5f, 1f);
+                StaminaText.alignment = TextAlignmentOptions.Left;
+                StaminaText.textWrappingMode = TextWrappingModes.NoWrap;
+                StaminaText.overflowMode = TextOverflowModes.Overflow;
             }
 
             if (HpText != null)
@@ -884,6 +1128,35 @@ namespace UIReforge
                 HpText.textWrappingMode = TextWrappingModes.NoWrap;
                 HpText.overflowMode = TextOverflowModes.Overflow;
             }
+        }
+
+        // Stamina: a thin strip parallel to the outer edge of the health chevron
+        // (Icons/chevron_stamina.png, IconSource/chevron_stamina.py), filled the same way.
+        private const float ChevStaminaMargin = 16f;
+
+        private static void BuildStaminaChevron(RectTransform root, Vector2 c, Vector2 mid)
+        {
+            if (!FoodIconOverrides.TryGetValue("chevron_stamina", out var ring) || ring == null)
+            {
+                UnityEngine.Debug.LogWarning("[UIReforge] chevron_stamina.png missing, stamina stays vanilla");
+                return;
+            }
+            var group = NewRect("StaminaChevron", root);
+            Place(group, c.x + mid.x, c.y + mid.y, ChevX1 - ChevX0 + 2 * ChevStaminaMargin,
+                ChevY1 - ChevY0 + 2 * ChevStaminaMargin, true);
+            group.SetSiblingIndex(0);
+
+            var track = NewRect("track", group, typeof(Image)).GetComponent<Image>();
+            Stretch(track.rectTransform);
+            track.sprite = ring;
+            track.color = ChevronTrack;
+
+            var maskImage = NewRect("fill", group, typeof(Image), typeof(Mask)).GetComponent<Image>();
+            Stretch(maskImage.rectTransform);
+            maskImage.sprite = ring;
+            maskImage.GetComponent<Mask>().showMaskGraphic = false;
+            ChevronStaminaSlow = BuildChevronSegments("slow", maskImage.transform, mid, StaminaTrailColor);
+            ChevronStaminaFast = BuildChevronSegments("fast", maskImage.transform, mid, YggStamina);
         }
 
         private static void Stretch(RectTransform rt)
@@ -919,7 +1192,33 @@ namespace UIReforge
         }
 
         // Fills the chevron from the tail (next to the HP label) towards the bottom end.
+        // Fraction of the bar for a value: relative to the current maximum, or to a
+        // fixed "full bar" value so the bar grows with food. Also drives the
+        // faint capacity band (maximum / full value).
+        internal static float BarFraction(float value, float max, ConfigEntry<float> fullValue, Image capacity)
+        {
+            bool absolute = HudUpdatePlugin.BarScale != null && HudUpdatePlugin.BarScale.Value == BarScaleMode.Absolute && fullValue != null;
+            float denominator = absolute ? Mathf.Max(1f, fullValue.Value) : max;
+            if (capacity != null)
+            {
+                capacity.enabled = absolute;
+                if (absolute) capacity.fillAmount = Mathf.Clamp01(max / denominator);
+            }
+            return Mathf.Clamp01(value / denominator);
+        }
+
         internal static void SetChevronFill(Image[] segments, float value)
+        {
+            if (segments == null) return;
+            // The stamina strip lies 12..19 units outside the centre line.
+            if (segments == ChevronStaminaFast || segments == ChevronStaminaSlow)
+                SetChevronFill(segments, value, 40f, 14f);
+            else SetChevronFill(segments, value, ChevBand, 0f);
+        }
+
+        // band: strip width; offset: shift of the strip's centre line away from the
+        // inside of the chevron (positive = outwards).
+        internal static void SetChevronFill(Image[] segments, float value, float band, float offset)
         {
             if (segments == null) return;
             var mid = new Vector2((ChevX0 + ChevX1) / 2f, (ChevY0 + ChevY1) / 2f);
@@ -937,11 +1236,13 @@ namespace UIReforge
                 image.enabled = filled > .05f;
                 if (!image.enabled) continue;
                 Vector2 dir = delta / length;
-                float back = i > 0 ? ChevCorner : 0f;
-                float forward = filled >= length - .05f && i < segments.Length - 1 ? ChevCorner : 0f;
+                Vector2 normal = new Vector2(dir.y, -dir.x);   // right of the direction
+                float corner = ChevCorner;
+                float back = i > 0 ? corner : 0f;
+                float forward = filled >= length - .05f && i < segments.Length - 1 ? corner : 0f;
                 var rt = image.rectTransform;
-                rt.anchoredPosition = ChevPath[i] - mid - dir * back;
-                rt.sizeDelta = new Vector2(back + filled + forward, ChevBand);
+                rt.anchoredPosition = ChevPath[i] - mid - dir * back - normal * offset;
+                rt.sizeDelta = new Vector2(back + filled + forward, band);
             }
         }
 
@@ -949,7 +1250,10 @@ namespace UIReforge
         {
             if (diamond == null) return;
             var image = diamond.GetComponent<Image>();
-            if (image != null) image.color = PanelDark;
+            if (image == null) return;
+            var c = PanelDark;
+            if (CurrentStyle != HudStyle.Chevron && HudUpdatePlugin.DiamondOpacity != null) c.a = HudUpdatePlugin.DiamondOpacity.Value;
+            image.color = c;
         }
 
         private static RectTransform NewRect(string name, Transform parent, params Type[] components)
@@ -975,7 +1279,7 @@ namespace UIReforge
         // left that runs parallel to the middle food diamond, a solid right end
         // and a dark value plate inside the bar.
         private static void BuildBar(string name, float y, bool cutFromBottom, Color fill, Color trail,
-            ref Image fast, ref Image slow, ref TextMeshProUGUI text)
+            ref Image fast, ref Image slow, ref TextMeshProUGUI text, out Image capacity)
         {
             var old = Panel.transform.Find(name);
             var group = NewRect("UIReforge" + name, Panel.transform);
@@ -987,15 +1291,18 @@ namespace UIReforge
             var track = NewRect("track", group, typeof(Image)).GetComponent<Image>();
             PlaceLeft(track.rectTransform, 0, fillWidth, BarHeight);
             track.sprite = cut;
-            track.color = new Color(PanelDark.r, PanelDark.g, PanelDark.b, .75f);
+            track.color = BarTrackColor;
 
+            // Faint band up to the current maximum (BarScale = Absolute only).
+            capacity = NewFilled("capacity", group, cut, new Color(fill.r, fill.g, fill.b, .22f), fillWidth);
+            capacity.enabled = false;
             slow = NewFilled("slow", group, cut, trail, fillWidth);
             fast = NewFilled("fast", group, cut, fill, fillWidth);
 
             var plate = NewRect("plate", group, typeof(Image)).GetComponent<Image>();
             PlaceLeft(plate.rectTransform, fillWidth, PlateWidth, BarHeight);
             plate.sprite = SolidSprite();
-            plate.color = PanelDark;
+            plate.color = BarPlateColor;
 
             if (text != null)
             {
@@ -1687,6 +1994,18 @@ namespace UIReforge
             var item = food?.m_item;
             if (item == null)
                 return DefaultFoodIcon;
+            return ResolveItemIcon(item, null) ?? (item.m_shared?.m_icons != null && item.m_shared.m_icons.Length > 0
+                ? item.m_shared.m_icons[0] : DefaultFoodIcon);
+        }
+
+        // The mod's flat icon for a food item, or the fallback when there is none
+        // (also for consumables without food stats, e.g. meads: they keep their own icon).
+        internal static Sprite ResolveItemIcon(ItemDrop.ItemData item, Sprite fallback)
+        {
+            // Callers retain the original food/item sprite when no replacement is returned.
+            if (HudUpdatePlugin.UseVanillaFoodIcons?.Value == true) return fallback;
+            if (item == null || item.m_shared == null) return fallback;
+            if (item.m_shared.m_food <= 0f && item.m_shared.m_foodStamina <= 0f && item.m_shared.m_foodEitr <= 0f) return fallback;
 
             string prefab = item.m_dropPrefab != null ? item.m_dropPrefab.name : null;
             string shared = item.m_shared != null ? item.m_shared.m_name : null;
@@ -1717,10 +2036,7 @@ namespace UIReforge
                 }
             }
 
-            if (item.m_shared != null && item.m_shared.m_icons != null && item.m_shared.m_icons.Length > 0)
-                return item.m_shared.m_icons[0];
-
-            return DefaultFoodIcon;
+            return fallback;
         }
     }
 
@@ -1744,7 +2060,7 @@ namespace UIReforge
 
             float hp = player.GetHealth();
             float maxHp = Mathf.Max(1f, player.GetMaxHealth());
-            float target = Mathf.Clamp01(hp / maxHp);
+            float target = HudState.BarFraction(hp, maxHp, HudUpdatePlugin.HealthBarMax, HudState.HpCapacityImage);
 
             if (HudState.HpFastValue < 0f)
             {
@@ -1793,11 +2109,11 @@ namespace UIReforge
             if (HudState.Panel == null) return true;
 
             HudState.RefreshGuardian(__instance);
-            if (HudState.ActiveStyle == HudStyle.Chevron) return true;
+            if (HudState.ActiveStyle == HudStyle.Chevron && !HudState.ChevronStaminaOn) return true;
 
             float stamina = player.GetStamina();
             float maxStamina = Mathf.Max(1f, player.GetMaxStamina());
-            float target = Mathf.Clamp01(stamina / maxStamina);
+            float target = HudState.BarFraction(stamina, maxStamina, HudUpdatePlugin.StaminaBarMax, HudState.StaminaCapacityImage);
 
             if (HudState.StaminaFastValue < 0f)
             {
@@ -1816,6 +2132,9 @@ namespace UIReforge
 
             if (HudState.StaminaSlowImage != null)
                 HudState.StaminaSlowImage.fillAmount = HudState.StaminaSlowValue;
+
+            HudState.SetChevronFill(HudState.ChevronStaminaFast, HudState.StaminaFastValue);
+            HudState.SetChevronFill(HudState.ChevronStaminaSlow, HudState.StaminaSlowValue);
 
             if (HudState.StaminaText != null)
                 HudState.StaminaText.text = Mathf.RoundToInt(stamina).ToString();
