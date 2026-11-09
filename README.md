@@ -6,6 +6,19 @@ A client-side Nordic HUD for Valheim by Crevitka. Guardian power, food timers, h
 
 Early release. The final 0.2.0 package still needs in-game verification across all three styles. See CHANGELOG.md for changes.
 
+## Screenshots
+
+Top row: `HudStyle = Bars`, `Chevron`, `Yggdrasil` with no other mods. Middle row: the same styles with the optional **ExtraSlots** integration and a 4th meal from **OneMoreMeal**. Bottom row: `FoodIconColor = Tint`, `Glow` and `UseVanillaFoodIcons = true`.
+
+![Bars, Chevron and Yggdrasil styles without other mods and with ExtraSlots + OneMoreMeal; food icons with Tint, Glow and vanilla icons](docs/hud-comparison.png)
+
+<details>
+<summary>All food icons next to the vanilla ones they replace</summary>
+
+![Each HUD Update icon next to the vanilla foods and guardian powers it replaces](docs/icon-comparison.png)
+
+</details>
+
 ## Features
 
 - **Bars:** slanted health and stamina bars with readable value plates.

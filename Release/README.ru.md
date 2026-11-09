@@ -2,6 +2,12 @@
 
 Клиентский HUD для Valheim от Crevitka. Три режима: Bars, Chevron и Yggdrasil; семь иконок боссов, таймеры еды, здоровье и стамина.
 
+## Скриншоты
+
+Верхний ряд: `HudStyle = Bars`, `Chevron`, `Yggdrasil` без других модов. Средний ряд: те же стили с интеграцией **ExtraSlots** и четвёртым блюдом от **OneMoreMeal**. Нижний ряд: `FoodIconColor = Tint`, `Glow` и `UseVanillaFoodIcons = true`.
+
+![Стили Bars, Chevron и Yggdrasil без модов и с ExtraSlots + OneMoreMeal; иконки еды с Tint, Glow и ванильными иконками](https://raw.githubusercontent.com/Crevitka/Valheim-Hud-Update/master/docs/hud-comparison.png)
+
 ## Что нового
 
 - Yggdrasil и поддержка четвёртого блюда, добавленного совместимым модом (например, OneMoreMeal).
